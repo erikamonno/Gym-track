@@ -1,0 +1,9 @@
+spring:
+  jpa:
+    properties:
+      hibernate:
+        globally_quoted_identifiers: true
+  datasource:
+    url: jdbc:postgresql://localhost:5432/gym
+    username: postgres
+    password: postgres
