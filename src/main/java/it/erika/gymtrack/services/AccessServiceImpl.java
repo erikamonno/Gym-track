@@ -50,26 +50,16 @@ public class AccessServiceImpl implements AccessService {
         var customerDto = customerService.getCustomer(dto.getCustomer().getId());
         entity.setCustomer(customerMapper.toEntity(customerDto));
 
-        if(!isGymOpen()) {
-            throw new GymClosedException("Gym closed, the access is impossible");
-        }
+        checkGymOpen();
+        checkValidSubscription(dto.getCustomer().getId());
+        checkValidCertificate(dto.getCustomer().getId());
+        checkIsAccessAlreadyDoneToday(dto.getCustomer().getId());
 
-        if(!isValidSubscription(dto.getCustomer().getId())) {
-            throw new SubscriptionNotValidException("Subscription not valid");
-        }
-
-        if(!isValidCertificate(dto.getCustomer().getId())) {
-            throw new CertificateNotValidException("Certificate not valid");
-        }
-
-        if(isAccessAlreadyDoneToday(dto.getCustomer().getId())) {
-            throw new AccessAlreadyDoneException("This customer has already done his access today");
-        }
         entity = repository.save(entity);
         return mapper.toDto(entity);
     }
 
-    private boolean isValidSubscription(UUID customerId) {
+    private void checkValidSubscription(UUID customerId) {
         var today = Instant.now();
         SubscriptionFilter subscriptionFilter = new SubscriptionFilter();
         subscriptionFilter.setCustomerId(customerId);
@@ -78,23 +68,31 @@ public class AccessServiceImpl implements AccessService {
             throw new SubscriptionNotFoundException("Subscription not found");
         }
         var result = page.stream().findFirst().get();
-        return today.isAfter(result.getStartDate()) || today.equals(result.getStartDate()) && today.isBefore(result.getEndDate());
+        var isValidSubscription = today.isAfter(result.getStartDate()) || today.equals(result.getStartDate()) && today.isBefore(result.getEndDate());
+        if(!isValidSubscription) {
+            throw new SubscriptionNotValidException("Subscription not valid");
+        }
     }
 
-    private boolean isValidCertificate(UUID certificateId) {
-        return certificateService.existValidCertificate(certificateId);
+    private void checkValidCertificate(UUID certificateId) {
+        if(!certificateService.existValidCertificate(certificateId)) {
+            throw new CertificateNotValidException("Certificate not valid");
+        }
     }
 
-    private boolean isGymOpen() {
+    private void checkGymOpen() {
         var openTime = LocalDate.now().atTime(7,0);
         var closeTime = LocalDate.now().atTime(LocalTime.MAX);
         var now = LocalDateTime.now();
         var nowIsAfterOrEqualOpenTime = now.isAfter(openTime) || now.equals(openTime);
         var nowIsBeforeOrIsEqualCloseTime = now.isBefore(closeTime) || now.equals(closeTime);
-        return nowIsAfterOrEqualOpenTime && nowIsBeforeOrIsEqualCloseTime;
+        var isGymOpen = nowIsAfterOrEqualOpenTime && nowIsBeforeOrIsEqualCloseTime;
+        if(!isGymOpen) {
+            throw new GymClosedException("Gym closed, the access is impossible");
+        }
     }
 
-    private boolean isAccessAlreadyDoneToday(UUID customerId) {
+    private void checkIsAccessAlreadyDoneToday(UUID customerId) {
         var startDay = LocalDate.now().atStartOfDay(ZoneId.systemDefault()).toInstant();
         var endDay = LocalDate.now().atStartOfDay(ZoneId.systemDefault()).with(LocalTime.MAX).toInstant();
         AccessFilter filter = new AccessFilter();
@@ -102,10 +100,9 @@ public class AccessServiceImpl implements AccessService {
         filter.setAccessDateFrom(startDay);
         filter.setAccessDateTo(endDay);
         var customerAccess = searchAccess(Pageable.ofSize(1), filter);
-        if(customerAccess.isEmpty()) {
-            return false;
+        if(!customerAccess.isEmpty()) {
+            throw new AccessAlreadyDoneException("This customer has already done his access today");
         }
-        return true;
     }
 
     @Override
