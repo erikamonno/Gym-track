@@ -19,7 +19,7 @@ public class Access {
     private UUID id;
 
     @Column(name = "access_date")
-    @CreationTimestamp
+    @CreationTimestamp  // genera il valore in fase di inserimento del record
     private Instant accessDate;
 
     @ManyToOne

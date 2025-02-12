@@ -14,12 +14,10 @@ import java.util.UUID;
 public class Certificate {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "id")
     private UUID id;
 
     @Column(name = "expiry_date")
-    @CreationTimestamp
     private Instant expiryDate;
 
     @Column(name = "content")

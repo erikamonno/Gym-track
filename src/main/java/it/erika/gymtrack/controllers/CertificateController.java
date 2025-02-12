@@ -7,10 +7,12 @@ import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
+import java.time.Instant;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("certificate")
+@RequestMapping("customer/{id}/certificate")  // perchè il certificato non può esistere senza l'utente
 public class CertificateController {
 
     private final CertificateService service;
@@ -20,21 +22,21 @@ public class CertificateController {
     }
 
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public CertificateDto uploadCertificate(@RequestParam(name = "customerId") UUID customerId, @RequestPart(name = "file") MultipartFile file) {
-        return service.upload(file, customerId);
+    public CertificateDto uploadCertificate(@PathVariable(name = "id") UUID id, @RequestParam Instant expiryDate, @RequestPart(name = "file") MultipartFile file) throws IOException {
+        return service.upload(id, file, expiryDate);
     }
 
-    @GetMapping("{id}")
+    @GetMapping  // non serve specificare l'id perchè l'ho inserita nel request mapping
     public CertificateDto getById(@PathVariable(name = "id") UUID id) {
         return service.getById(id);
     }
 
-    @RequestMapping(method = RequestMethod.HEAD, path = "{id}")   // Metodo http che ci fornisce dei metadati riguardanti una risorsa
-    public boolean existValidCertificate(@PathVariable(name = "customerId") UUID customerId) {
-        return service.existValidCertificate(customerId);
+    @RequestMapping(method = RequestMethod.HEAD)   // Metodo http che ci fornisce dei metadati riguardanti una risorsa
+    public boolean existValidCertificate(@PathVariable(name = "id") UUID id) {
+        return service.existValidCertificate(id);
     }
 
-    @DeleteMapping("{id}")
+    @DeleteMapping
     public void deleteCertificate(@PathVariable(name = "id") UUID id) {
         service.delete(id);
     }

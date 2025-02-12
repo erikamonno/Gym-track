@@ -1,6 +1,9 @@
 package it.erika.gymtrack.specifications;
 
 import it.erika.gymtrack.entities.Access;
+import it.erika.gymtrack.entities.Access_;
+import it.erika.gymtrack.entities.Customer;
+import it.erika.gymtrack.entities.Customer_;
 import it.erika.gymtrack.filters.AccessFilter;
 import it.erika.gymtrack.filters.CustomerFilter;
 import jakarta.persistence.criteria.CriteriaBuilder;
@@ -49,8 +52,10 @@ public class AccessSpecification implements Specification<Access> {
             if(filter.getCustomerId()==null) {
                 return null;
             } else {
-                return criteriaBuilder.equal(root.get("customer"), filter.getCustomerId());
+                return criteriaBuilder.equal(root.get(Access_.customer).get(Customer_.id), filter.getCustomerId());
             }
         };
     }
+
+
 }

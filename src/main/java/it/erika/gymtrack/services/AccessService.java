@@ -13,6 +13,5 @@ public interface AccessService {
     AccessDto insertAccess(AccessDto dto);
     AccessDto getAccess(UUID id);
     Page<AccessDto> searchAccess(Pageable pageable, AccessFilter filter);
-    void updateAccess(UUID id, AccessDto dto);
     void deleteAccess(UUID id);
 }

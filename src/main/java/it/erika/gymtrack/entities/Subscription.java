@@ -27,4 +27,8 @@ public class Subscription {
     @Column(name = "type")
     @Enumerated(EnumType.STRING)
     private SubscriptionType type;
+
+    @ManyToOne
+    @JoinColumn(name = "customer_id")
+    private Customer customer;
 }

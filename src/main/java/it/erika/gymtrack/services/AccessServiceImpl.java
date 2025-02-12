@@ -2,8 +2,11 @@ package it.erika.gymtrack.services;
 
 import it.erika.gymtrack.dto.AccessDto;
 import it.erika.gymtrack.entities.Access;
-import it.erika.gymtrack.exceptions.AccessNotFoundException;
+import it.erika.gymtrack.entities.Customer;
+import it.erika.gymtrack.entities.Subscription;
+import it.erika.gymtrack.exceptions.*;
 import it.erika.gymtrack.filters.AccessFilter;
+import it.erika.gymtrack.filters.SubscriptionFilter;
 import it.erika.gymtrack.mappers.AccessMapper;
 import it.erika.gymtrack.mappers.CustomerMapper;
 import it.erika.gymtrack.repository.AccessRepository;
@@ -14,6 +17,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.time.*;
+import java.util.Date;
 import java.util.Optional;
 import java.util.UUID;
 @Log4j2
@@ -24,25 +29,83 @@ public class AccessServiceImpl implements AccessService {
     private final AccessMapper mapper;
     private final CustomerMapper customerMapper;
     private final CustomerService customerService;
+    private final CertificateService certificateService;
+    private final SubscriptionService subscriptionService;
 
 
-    public AccessServiceImpl(AccessRepository repository, AccessMapper mapper, CustomerMapper customerMapper, CustomerService customerService) {
+
+    public AccessServiceImpl(AccessRepository repository, AccessMapper mapper, CustomerMapper customerMapper, CustomerService customerService, CertificateService certificateService, SubscriptionService subscriptionService) {
         this.repository = repository;
         this.mapper = mapper;
         this.customerMapper = customerMapper;
         this.customerService = customerService;
+        this.certificateService = certificateService;
+        this.subscriptionService = subscriptionService;
     }
 
     @Override
     public AccessDto insertAccess(AccessDto dto) {
         Access entity = new Access();
         log.info("Insert access {}", dto);
-        entity.setId(dto.getId());
-        entity.setAccessDate(dto.getAccessDate());
         var customerDto = customerService.getCustomer(dto.getCustomer().getId());
         entity.setCustomer(customerMapper.toEntity(customerDto));
+
+        if(!isGymOpen()) {
+            throw new GymClosedException("Gym closed, the access is impossible");
+        }
+
+        if(!isValidSubscription(dto.getCustomer().getId())) {
+            throw new SubscriptionNotValidException("Subscription not valid");
+        }
+
+        if(!isValidCertificate(dto.getCustomer().getId())) {
+            throw new CertificateNotValidException("Certificate not valid");
+        }
+
+        if(isAccessAlreadyDoneToday(dto.getCustomer().getId())) {
+            throw new AccessAlreadyDoneException("This customer has already done his access today");
+        }
         entity = repository.save(entity);
         return mapper.toDto(entity);
+    }
+
+    private boolean isValidSubscription(UUID customerId) {
+        var today = Instant.now();
+        SubscriptionFilter subscriptionFilter = new SubscriptionFilter();
+        subscriptionFilter.setCustomerId(customerId);
+        var page = subscriptionService.searchSubscription(Pageable.ofSize(1), subscriptionFilter);
+        if(page.isEmpty()) {
+            throw new SubscriptionNotFoundException("Subscription not found");
+        }
+        var result = page.stream().findFirst().get();
+        return today.isAfter(result.getStartDate()) || today.equals(result.getStartDate()) && today.isBefore(result.getEndDate());
+    }
+
+    private boolean isValidCertificate(UUID certificateId) {
+        return certificateService.existValidCertificate(certificateId);
+    }
+
+    private boolean isGymOpen() {
+        var openTime = LocalDate.now().atTime(7,0);
+        var closeTime = LocalDate.now().atTime(LocalTime.MAX);
+        var now = LocalDateTime.now();
+        var nowIsAfterOrEqualOpenTime = now.isAfter(openTime) || now.equals(openTime);
+        var nowIsBeforeOrIsEqualCloseTime = now.isBefore(closeTime) || now.equals(closeTime);
+        return nowIsAfterOrEqualOpenTime && nowIsBeforeOrIsEqualCloseTime;
+    }
+
+    private boolean isAccessAlreadyDoneToday(UUID customerId) {
+        var startDay = LocalDate.now().atStartOfDay(ZoneId.systemDefault()).toInstant();
+        var endDay = LocalDate.now().atStartOfDay(ZoneId.systemDefault()).with(LocalTime.MAX).toInstant();
+        AccessFilter filter = new AccessFilter();
+        filter.setCustomerId(customerId);
+        filter.setAccessDateFrom(startDay);
+        filter.setAccessDateTo(endDay);
+        var customerAccess = searchAccess(Pageable.ofSize(1), filter);
+        if(customerAccess.isEmpty()) {
+            return false;
+        }
+        return true;
     }
 
     @Override
@@ -60,18 +123,6 @@ public class AccessServiceImpl implements AccessService {
         return repository.findAll(new AccessSpecification(filter), pageable).map(access -> mapper.toDto(access));
     }
 
-    @Override
-    @Transactional
-    public void updateAccess(UUID id, AccessDto dto) {
-        Optional<Access> oEntity = repository.findById(id);
-        if(oEntity.isEmpty()) {
-            throw new AccessNotFoundException("Access not found");
-        }
-        var entity = oEntity.get();
-        var customerDto = customerService.getCustomer(dto.getCustomer().getId());
-        entity.setAccessDate(dto.getAccessDate());
-        entity.setCustomer(customerMapper.toEntity(customerDto));
-    }
 
     @Override
     public void deleteAccess(UUID id) {

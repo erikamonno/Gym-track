@@ -15,4 +15,6 @@ public class AccessFilter {
     private Instant accessDateTo;
 
     private UUID customerId;
+
+
 }

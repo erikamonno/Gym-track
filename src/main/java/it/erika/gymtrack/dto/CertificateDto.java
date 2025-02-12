@@ -9,7 +9,7 @@ import java.util.UUID;
 
 @Data
 public class CertificateDto {
-
+    @NotNull
     private UUID id;
 
     @NotNull

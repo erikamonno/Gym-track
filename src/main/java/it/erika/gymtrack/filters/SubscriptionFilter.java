@@ -5,6 +5,7 @@ import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
 
 import java.time.Instant;
+import java.util.UUID;
 
 @Data
 public class SubscriptionFilter {
@@ -18,4 +19,6 @@ public class SubscriptionFilter {
     private Instant endDateTo;
 
     private SubscriptionType type;
+
+    private UUID customerId;
 }

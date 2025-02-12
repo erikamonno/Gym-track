@@ -17,7 +17,7 @@ public class AccessDto {
 
     private UUID id;
 
-    @NotBlank
+
     private Instant accessDate;
 
     @NotNull

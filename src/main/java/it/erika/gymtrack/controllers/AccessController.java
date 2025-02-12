@@ -36,11 +36,6 @@ public class AccessController {
         return service.searchAccess(pageable, filter);
     }
 
-    @PutMapping("{id}")
-    public void updateAccess(@RequestBody AccessDto dto, @PathVariable(name = "id") UUID id) {
-        service.updateAccess(id, dto);
-    }
-
     @DeleteMapping("{id}")
     public void deleteAccess(@PathVariable(name = "id") UUID id) {
         service.deleteAccess(id);
