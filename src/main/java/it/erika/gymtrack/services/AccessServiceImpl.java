@@ -1,9 +1,11 @@
 package it.erika.gymtrack.services;
 
 import it.erika.gymtrack.dto.AccessDto;
+import it.erika.gymtrack.dto.SubscriptionDto;
 import it.erika.gymtrack.entities.Access;
 import it.erika.gymtrack.entities.Customer;
 import it.erika.gymtrack.entities.Subscription;
+import it.erika.gymtrack.enumes.SubscriptionType;
 import it.erika.gymtrack.exceptions.*;
 import it.erika.gymtrack.filters.AccessFilter;
 import it.erika.gymtrack.filters.SubscriptionFilter;
@@ -17,6 +19,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.lang.reflect.Type;
 import java.time.*;
 import java.util.Date;
 import java.util.Optional;
@@ -49,26 +52,31 @@ public class AccessServiceImpl implements AccessService {
         log.info("Insert access {}", dto);
         var customerDto = customerService.getCustomer(dto.getCustomer().getId());
         entity.setCustomer(customerMapper.toEntity(customerDto));
+        var subscriptionDto = searchSubscription(dto.getCustomer().getId());
 
         checkGymOpen();
-        checkValidSubscription(dto.getCustomer().getId());
+        checkValidSubscription(subscriptionDto);
         checkValidCertificate(dto.getCustomer().getId());
-        checkIsAccessAlreadyDoneToday(dto.getCustomer().getId());
+        checkIsAccessAlreadyDoneToday(dto.getCustomer().getId(), subscriptionDto);
 
         entity = repository.save(entity);
         return mapper.toDto(entity);
     }
 
-    private void checkValidSubscription(UUID customerId) {
-        var today = Instant.now();
+    private SubscriptionDto searchSubscription(UUID customerId) {
         SubscriptionFilter subscriptionFilter = new SubscriptionFilter();
         subscriptionFilter.setCustomerId(customerId);
         var page = subscriptionService.searchSubscription(Pageable.ofSize(1), subscriptionFilter);
         if(page.isEmpty()) {
             throw new SubscriptionNotFoundException("Subscription not found");
         }
-        var result = page.stream().findFirst().get();
-        var isValidSubscription = today.isAfter(result.getStartDate()) || today.equals(result.getStartDate()) && today.isBefore(result.getEndDate());
+        return page.stream().findFirst().get();
+
+    }
+
+    private void checkValidSubscription(SubscriptionDto subscriptionDto) {
+        var today = Instant.now();
+        var isValidSubscription = today.isAfter(subscriptionDto.getStartDate()) || today.equals(subscriptionDto.getStartDate()) && today.isBefore(subscriptionDto.getEndDate());
         if(!isValidSubscription) {
             throw new SubscriptionNotValidException("Subscription not valid");
         }
@@ -92,7 +100,7 @@ public class AccessServiceImpl implements AccessService {
         }
     }
 
-    private void checkIsAccessAlreadyDoneToday(UUID customerId) {
+    private void checkIsAccessAlreadyDoneToday(UUID customerId, SubscriptionDto subscriptionDto) {
         var startDay = LocalDate.now().atStartOfDay(ZoneId.systemDefault()).toInstant();
         var endDay = LocalDate.now().atStartOfDay(ZoneId.systemDefault()).with(LocalTime.MAX).toInstant();
         AccessFilter filter = new AccessFilter();
@@ -100,8 +108,8 @@ public class AccessServiceImpl implements AccessService {
         filter.setAccessDateFrom(startDay);
         filter.setAccessDateTo(endDay);
         var customerAccess = searchAccess(Pageable.ofSize(1), filter);
-        if(!customerAccess.isEmpty()) {
-            throw new AccessAlreadyDoneException("This customer has already done his access today");
+        if(!customerAccess.isEmpty() && subscriptionDto.getType().equals(SubscriptionType.NORMAL)) {
+            throw new NormalSubscriptionException("Access not permitted, normal subscription type");
         }
     }
 
