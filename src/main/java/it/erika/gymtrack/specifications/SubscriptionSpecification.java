@@ -1,9 +1,7 @@
 package it.erika.gymtrack.specifications;
 
-import it.erika.gymtrack.entities.Customer;
-import it.erika.gymtrack.entities.Customer_;
-import it.erika.gymtrack.entities.Subscription;
-import it.erika.gymtrack.entities.Subscription_;
+import it.erika.gymtrack.dto.SubscriptionTypeDto;
+import it.erika.gymtrack.entities.*;
 import it.erika.gymtrack.filters.SubscriptionFilter;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
@@ -23,7 +21,7 @@ public class SubscriptionSpecification implements Specification<Subscription> {
                 startDateTo(),
                 endDateFrom(),
                 endDateTo(),
-                typeEqual(),
+                //typeEqual(),
                 customerIdEqual()
         ).toPredicate(root, query, criteriaBuilder);
     }
@@ -68,12 +66,22 @@ public class SubscriptionSpecification implements Specification<Subscription> {
         };
     }
 
-    public Specification<Subscription> typeEqual() {
+    /*public Specification<Subscription> typeEqual() {
         return (root, query, criteriaBuilder) -> {
             if(filter.getType()==null) {
                 return null;
             } else {
                 return criteriaBuilder.equal(root.get(Subscription_.type), filter.getType());
+            }
+        };
+    }*/
+
+    public Specification<Subscription> subscriptionTypeIdEqual() {
+        return (root, query, criteriaBuilder) -> {
+            if(filter.getSubscriptionTypeId()==null) {
+                return null;
+            } else {
+                return criteriaBuilder.equal(root.get(Subscription_.subscriptionType).get(SubscriptionType_.id), filter.getSubscriptionTypeId());
             }
         };
     }

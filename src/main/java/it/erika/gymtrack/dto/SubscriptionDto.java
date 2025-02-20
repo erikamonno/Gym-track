@@ -1,6 +1,6 @@
 package it.erika.gymtrack.dto;
 
-import it.erika.gymtrack.enumes.SubscriptionType;
+import it.erika.gymtrack.entities.SubscriptionType;
 import jakarta.persistence.Column;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -22,7 +22,8 @@ public class SubscriptionDto {
     @NotNull
     private Instant endDate;
 
-    private SubscriptionType type;
+    @NotNull
+    private SubscriptionTypeDto subscriptionType;
 
     @NotNull
     private CustomerDto customer;

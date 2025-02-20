@@ -6,7 +6,9 @@ import it.erika.gymtrack.exceptions.SubscriptionNotFoundException;
 import it.erika.gymtrack.filters.SubscriptionFilter;
 import it.erika.gymtrack.mappers.CustomerMapper;
 import it.erika.gymtrack.mappers.SubscriptionMapper;
+import it.erika.gymtrack.mappers.SubscriptionTypeMapper;
 import it.erika.gymtrack.repository.SubscriptionRepository;
+import it.erika.gymtrack.repository.SubscriptionTypeRepository;
 import it.erika.gymtrack.specifications.SubscriptionSpecification;
 import jakarta.transaction.Transactional;
 import org.springframework.data.domain.Page;
@@ -24,21 +26,26 @@ public class SubscriptionServiceImpl implements SubscriptionService {
     private final SubscriptionRepository repository;
     private final CustomerService customerService;
     private final CustomerMapper customerMapper;
+    private final SubscriptionTypeService subscriptionTypeService;
+    private final SubscriptionTypeMapper subscriptionTypeMapper;
 
-    public SubscriptionServiceImpl(SubscriptionMapper mapper, SubscriptionRepository repository, CustomerService customerService, CustomerMapper customerMapper) {
+    public SubscriptionServiceImpl(SubscriptionMapper mapper, SubscriptionRepository repository, CustomerService customerService, CustomerMapper customerMapper, SubscriptionTypeService subscriptionTypeService, SubscriptionTypeMapper subscriptionTypeMapper) {
         this.mapper = mapper;
         this.repository = repository;
         this.customerService = customerService;
         this.customerMapper = customerMapper;
+        this.subscriptionTypeService = subscriptionTypeService;
+        this.subscriptionTypeMapper = subscriptionTypeMapper;
     }
 
     @Override
     public SubscriptionDto insertSubscription(SubscriptionDto dto) {
         Subscription entity = new Subscription();
         var customerDto = customerService.getCustomer(dto.getCustomer().getId());
+        var subscriptionTypeDto = subscriptionTypeService.readOneSubscriptionType(dto.getSubscriptionType().getId());
         entity.setStartDate(dto.getStartDate());
         entity.setEndDate(dto.getEndDate());
-        entity.setType(dto.getType());
+        entity.setSubscriptionType(subscriptionTypeMapper.toEntity(subscriptionTypeDto));
         entity.setCustomer(customerMapper.toEntity(customerDto));
         entity = repository.save(entity);
         return mapper.toDto(entity);
@@ -68,9 +75,10 @@ public class SubscriptionServiceImpl implements SubscriptionService {
         }
         var entity = oEntity.get();
         var customerDto = customerService.getCustomer(dto.getCustomer().getId());
+        var subscriptionTypeDto = subscriptionTypeService.readOneSubscriptionType(dto.getSubscriptionType().getId());
         entity.setStartDate(dto.getStartDate());
         entity.setEndDate(dto.getEndDate());
-        entity.setType(dto.getType());
+        entity.setSubscriptionType(subscriptionTypeMapper.toEntity(subscriptionTypeDto));
         entity.setCustomer(customerMapper.toEntity(customerDto));
     }
 

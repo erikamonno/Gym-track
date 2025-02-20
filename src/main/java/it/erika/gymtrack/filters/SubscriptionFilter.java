@@ -1,6 +1,6 @@
 package it.erika.gymtrack.filters;
 
-import it.erika.gymtrack.enumes.SubscriptionType;
+
 import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
 
@@ -18,7 +18,7 @@ public class SubscriptionFilter {
 
     private Instant endDateTo;
 
-    private SubscriptionType type;
+    private UUID subscriptionTypeId;
 
     private UUID customerId;
 }

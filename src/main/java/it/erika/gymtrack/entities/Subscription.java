@@ -1,6 +1,5 @@
 package it.erika.gymtrack.entities;
 
-import it.erika.gymtrack.enumes.SubscriptionType;
 import jakarta.persistence.*;
 import lombok.Data;
 
@@ -24,9 +23,9 @@ public class Subscription {
     @Column(name = "end_date")
     private Instant endDate;
 
-    @Column(name = "type")
-    @Enumerated(EnumType.STRING)
-    private SubscriptionType type;
+    @ManyToOne
+    @JoinColumn(name = "subscriptionType")
+    private SubscriptionType subscriptionType;
 
     @ManyToOne
     @JoinColumn(name = "customer_id")

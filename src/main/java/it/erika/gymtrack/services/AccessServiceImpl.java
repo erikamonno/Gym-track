@@ -5,7 +5,7 @@ import it.erika.gymtrack.dto.SubscriptionDto;
 import it.erika.gymtrack.entities.Access;
 import it.erika.gymtrack.entities.Customer;
 import it.erika.gymtrack.entities.Subscription;
-import it.erika.gymtrack.enumes.SubscriptionType;
+
 import it.erika.gymtrack.exceptions.*;
 import it.erika.gymtrack.filters.AccessFilter;
 import it.erika.gymtrack.filters.SubscriptionFilter;
@@ -108,9 +108,9 @@ public class AccessServiceImpl implements AccessService {
         filter.setAccessDateFrom(startDay);
         filter.setAccessDateTo(endDay);
         var customerAccess = searchAccess(Pageable.ofSize(1), filter);
-        if(!customerAccess.isEmpty() && subscriptionDto.getType().equals(SubscriptionType.NORMAL)) {
+        /*if(!customerAccess.isEmpty() && subscriptionDto.getType().equals(SubscriptionType.NORMAL)) {
             throw new NormalSubscriptionException("Access not permitted, normal subscription type");
-        }
+        }*/
     }
 
     @Override
