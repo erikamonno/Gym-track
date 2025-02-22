@@ -24,7 +24,7 @@ public class Subscription {
     private Instant endDate;
 
     @ManyToOne
-    @JoinColumn(name = "subscriptionType")
+    @JoinColumn(name = "subscription_type_id")
     private SubscriptionType subscriptionType;
 
     @ManyToOne

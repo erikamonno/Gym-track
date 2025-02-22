@@ -2,9 +2,8 @@ package it.erika.gymtrack.services;
 
 import it.erika.gymtrack.dto.AccessDto;
 import it.erika.gymtrack.dto.SubscriptionDto;
-import it.erika.gymtrack.entities.Access;
-import it.erika.gymtrack.entities.Customer;
-import it.erika.gymtrack.entities.Subscription;
+import it.erika.gymtrack.dto.SubscriptionTypeDto;
+import it.erika.gymtrack.entities.*;
 
 import it.erika.gymtrack.exceptions.*;
 import it.erika.gymtrack.filters.AccessFilter;
@@ -13,15 +12,12 @@ import it.erika.gymtrack.mappers.AccessMapper;
 import it.erika.gymtrack.mappers.CustomerMapper;
 import it.erika.gymtrack.repository.AccessRepository;
 import it.erika.gymtrack.specifications.AccessSpecification;
-import jakarta.transaction.Transactional;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import java.lang.reflect.Type;
 import java.time.*;
-import java.util.Date;
 import java.util.Optional;
 import java.util.UUID;
 @Log4j2
@@ -57,7 +53,7 @@ public class AccessServiceImpl implements AccessService {
         checkGymOpen();
         checkValidSubscription(subscriptionDto);
         checkValidCertificate(dto.getCustomer().getId());
-        checkIsAccessAlreadyDoneToday(dto.getCustomer().getId(), subscriptionDto);
+        checkIfMaxDailyAccessWasExceeded(dto.getCustomer().getId(), subscriptionDto.getSubscriptionType());
 
         entity = repository.save(entity);
         return mapper.toDto(entity);
@@ -100,17 +96,22 @@ public class AccessServiceImpl implements AccessService {
         }
     }
 
-    private void checkIsAccessAlreadyDoneToday(UUID customerId, SubscriptionDto subscriptionDto) {
-        var startDay = LocalDate.now().atStartOfDay(ZoneId.systemDefault()).toInstant();
-        var endDay = LocalDate.now().atStartOfDay(ZoneId.systemDefault()).with(LocalTime.MAX).toInstant();
-        AccessFilter filter = new AccessFilter();
-        filter.setCustomerId(customerId);
-        filter.setAccessDateFrom(startDay);
-        filter.setAccessDateTo(endDay);
-        var customerAccess = searchAccess(Pageable.ofSize(1), filter);
-        /*if(!customerAccess.isEmpty() && subscriptionDto.getType().equals(SubscriptionType.NORMAL)) {
-            throw new NormalSubscriptionException("Access not permitted, normal subscription type");
-        }*/
+    private void checkIfMaxDailyAccessWasExceeded(UUID customerId, SubscriptionTypeDto subscriptionTypeDto) {
+        if(subscriptionTypeDto.getMaxDailyAccesses() != null) {
+            var startDay = LocalDate.now().atStartOfDay(ZoneId.systemDefault()).toInstant();
+            var endDay = LocalDate.now().atStartOfDay(ZoneId.systemDefault()).with(LocalTime.MAX).toInstant();
+            AccessFilter filter = new AccessFilter();
+
+            filter.setCustomerId(customerId);
+            filter.setAccessDateFrom(startDay);
+            filter.setAccessDateTo(endDay);
+
+            var customerDailyAccessList = searchAccess(Pageable.ofSize(1), filter);
+
+            if(customerDailyAccessList.getTotalElements() >= subscriptionTypeDto.getMaxDailyAccesses()) {
+                throw new MaxDailyAccessExceededException("Access not permitted, max daily access was exceeded");
+            }
+        }
     }
 
     @Override

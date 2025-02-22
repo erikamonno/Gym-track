@@ -21,7 +21,7 @@ public class SubscriptionSpecification implements Specification<Subscription> {
                 startDateTo(),
                 endDateFrom(),
                 endDateTo(),
-                //typeEqual(),
+                subscriptionTypeIdEqual(),
                 customerIdEqual()
         ).toPredicate(root, query, criteriaBuilder);
     }
@@ -66,15 +66,6 @@ public class SubscriptionSpecification implements Specification<Subscription> {
         };
     }
 
-    /*public Specification<Subscription> typeEqual() {
-        return (root, query, criteriaBuilder) -> {
-            if(filter.getType()==null) {
-                return null;
-            } else {
-                return criteriaBuilder.equal(root.get(Subscription_.type), filter.getType());
-            }
-        };
-    }*/
 
     public Specification<Subscription> subscriptionTypeIdEqual() {
         return (root, query, criteriaBuilder) -> {
