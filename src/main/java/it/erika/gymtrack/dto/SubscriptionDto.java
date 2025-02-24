@@ -19,7 +19,6 @@ public class SubscriptionDto {
     @NotNull
     private Instant startDate;
 
-    @NotNull
     private Instant endDate;
 
     @NotNull

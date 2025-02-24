@@ -16,6 +16,12 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
+import java.time.Instant;
+import java.time.LocalDate;
+import java.time.ZoneId;
+import java.time.temporal.ChronoUnit;
+import java.time.temporal.TemporalUnit;
+import java.util.Calendar;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -43,8 +49,13 @@ public class SubscriptionServiceImpl implements SubscriptionService {
         Subscription entity = new Subscription();
         var customerDto = customerService.getCustomer(dto.getCustomer().getId());
         var subscriptionTypeDto = subscriptionTypeService.readOneSubscriptionType(dto.getSubscriptionType().getId());
+        if(dto.getEndDate()==null) {
+            var endDate = dto.getStartDate().plus(subscriptionTypeDto.getDurationInDays(), ChronoUnit.DAYS);
+            entity.setEndDate(endDate);
+        } else {
+            entity.setEndDate(dto.getEndDate());
+        }
         entity.setStartDate(dto.getStartDate());
-        entity.setEndDate(dto.getEndDate());
         entity.setSubscriptionType(subscriptionTypeMapper.toEntity(subscriptionTypeDto));
         entity.setCustomer(customerMapper.toEntity(customerDto));
         entity = repository.save(entity);

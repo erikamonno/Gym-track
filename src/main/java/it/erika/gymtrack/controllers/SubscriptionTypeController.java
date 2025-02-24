@@ -16,8 +16,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("subscription_type")
-
+@RequestMapping("subscriptionType")
 public class SubscriptionTypeController {
 
     private final SubscriptionTypeService service;
@@ -42,12 +41,12 @@ public class SubscriptionTypeController {
     }
 
     @PutMapping("{id}")
-    public void updateSubscriptionType(@RequestBody @Valid SubscriptionTypeDto dto, @RequestParam(name = "id")UUID id) {
+    public void updateSubscriptionType(@RequestBody @Valid SubscriptionTypeDto dto, @PathVariable(name = "id")UUID id) {
         service.updateSubscriptionType(dto, id);
     }
 
     @DeleteMapping("{id}")
-    public void deleteSubscriptionType(@RequestParam UUID id) {
+    public void deleteSubscriptionType(@PathVariable UUID id) {
         service.deleteSubscriptionType(id);
     }
 }
