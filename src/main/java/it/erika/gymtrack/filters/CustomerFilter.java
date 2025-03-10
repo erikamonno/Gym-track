@@ -9,6 +9,7 @@ import java.time.LocalDate;
 
 @Data
 public class CustomerFilter {
+
     private String name;
 
     private String surname;
