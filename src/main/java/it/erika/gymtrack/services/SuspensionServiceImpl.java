@@ -1,7 +1,6 @@
 package it.erika.gymtrack.services;
 
 import it.erika.gymtrack.dto.SuspensionDto;
-import it.erika.gymtrack.entities.Subscription;
 import it.erika.gymtrack.entities.Suspension;
 import it.erika.gymtrack.exceptions.SuspensionAlreadyExistInThatDateException;
 import it.erika.gymtrack.exceptions.SuspensionNotFoundException;
@@ -39,6 +38,9 @@ public class SuspensionServiceImpl implements SuspensionService{
     public SuspensionDto insertSuspension(SuspensionDto dto) {
         Suspension entity = new Suspension();
         var subscriptionDto = subscriptionService.getSubscription(dto.getSubscription().getId());
+
+        checkActiveSuspensionAtInstant(dto.getSubscription().getId(), dto.getStartDate());
+
         entity.setStartDate(dto.getStartDate());
         entity.setEndDate(dto.getEndDate());
         entity.setReason(dto.getReason());
@@ -48,9 +50,10 @@ public class SuspensionServiceImpl implements SuspensionService{
         return mapper.toDto(entity);
     }
 
-    private void checkSuspensionIfAlreadyExistInThatDates(SuspensionDto dto) {
-        List<Suspension> subscriptionList = repository.findAll(new ActiveSuspensionSpecification(dto));
-        if(!subscriptionList.isEmpty()) {
+    @Override
+    public void checkActiveSuspensionAtInstant(UUID subscriptionId, Instant atDate) {
+        List<Suspension> suspensionList = repository.findAll(new ActiveSuspensionSpecification(subscriptionId, atDate));
+        if(!suspensionList.isEmpty()) {
             throw new SuspensionAlreadyExistInThatDateException("Exisiting suspension");
         }
     }

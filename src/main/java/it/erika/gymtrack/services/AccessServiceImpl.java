@@ -30,16 +30,18 @@ public class AccessServiceImpl implements AccessService {
     private final CustomerService customerService;
     private final CertificateService certificateService;
     private final SubscriptionService subscriptionService;
+    private final SuspensionService suspensionService;
 
 
 
-    public AccessServiceImpl(AccessRepository repository, AccessMapper mapper, CustomerMapper customerMapper, CustomerService customerService, CertificateService certificateService, SubscriptionService subscriptionService) {
+    public AccessServiceImpl(AccessRepository repository, AccessMapper mapper, CustomerMapper customerMapper, CustomerService customerService, CertificateService certificateService, SubscriptionService subscriptionService, SuspensionService suspensionService) {
         this.repository = repository;
         this.mapper = mapper;
         this.customerMapper = customerMapper;
         this.customerService = customerService;
         this.certificateService = certificateService;
         this.subscriptionService = subscriptionService;
+        this.suspensionService = suspensionService;
     }
 
     @Override
@@ -52,6 +54,7 @@ public class AccessServiceImpl implements AccessService {
 
         checkGymOpen();
         checkValidSubscription(subscriptionDto);
+        suspensionService.checkActiveSuspensionAtInstant(subscriptionDto.getId(), Instant.now()); //controllo nella data corrente
         checkValidCertificate(dto.getCustomer().getId());
         checkIfMaxDailyAccessWasExceeded(dto.getCustomer().getId(), subscriptionDto.getSubscriptionType());
 
@@ -113,6 +116,7 @@ public class AccessServiceImpl implements AccessService {
             }
         }
     }
+
 
     @Override
     public AccessDto getAccess(UUID id) {
