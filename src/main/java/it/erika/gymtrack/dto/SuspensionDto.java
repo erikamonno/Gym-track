@@ -28,4 +28,6 @@ public class SuspensionDto {
 
     @NotNull
     private Boolean refundSuspension;
+
+    private Instant originalSuspensionEndDate;
 }

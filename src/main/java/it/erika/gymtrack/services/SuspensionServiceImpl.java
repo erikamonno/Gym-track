@@ -47,6 +47,7 @@ public class SuspensionServiceImpl implements SuspensionService{
         entity.setNote(dto.getNote());
         entity.setSubscription(subscriptionMapper.toEntity(subscriptionDto));
         entity.setRefundSuspension(dto.getRefundSuspension());
+
         entity = repository.save(entity);
         return mapper.toDto(entity);
     }
