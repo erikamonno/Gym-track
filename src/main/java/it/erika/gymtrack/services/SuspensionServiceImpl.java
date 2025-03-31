@@ -46,6 +46,7 @@ public class SuspensionServiceImpl implements SuspensionService{
         entity.setReason(dto.getReason());
         entity.setNote(dto.getNote());
         entity.setSubscription(subscriptionMapper.toEntity(subscriptionDto));
+        entity.setRefundSuspension(dto.getRefundSuspension());
         entity = repository.save(entity);
         return mapper.toDto(entity);
     }
@@ -87,6 +88,7 @@ public class SuspensionServiceImpl implements SuspensionService{
         entity.setReason(dto.getReason());
         entity.setNote(dto.getNote());
         entity.setSubscription(subscriptionMapper.toEntity(subscriptionDto));
+        entity.setRefundSuspension(dto.getRefundSuspension());
     }
 
     @Override

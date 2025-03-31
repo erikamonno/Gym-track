@@ -25,4 +25,7 @@ public class SuspensionDto {
 
     @NotNull
     private SubscriptionDto subscription;
+
+    @NotNull
+    private Boolean refundSuspension;
 }

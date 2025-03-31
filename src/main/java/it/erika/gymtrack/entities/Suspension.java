@@ -33,4 +33,6 @@ public class Suspension {
     @JoinColumn(name = "subscription_id")
     private Subscription subscription;
 
+    @Column(name = "refund_suspension")
+    private Boolean refundSuspension;
 }

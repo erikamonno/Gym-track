@@ -20,4 +20,5 @@ public class SuspensionFilter {
     private Reason reason;
 
     private UUID subscriptionId;
+
 }
