@@ -1,7 +1,6 @@
 package it.erika.gymtrack.dto;
 
 import it.erika.gymtrack.enumes.Reason;
-import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
@@ -29,5 +28,5 @@ public class SuspensionDto {
     @NotNull
     private Boolean refundSuspension;
 
-    private Instant originalSuspensionEndDate;
+    private Instant originalSubscriptionEndDate;
 }

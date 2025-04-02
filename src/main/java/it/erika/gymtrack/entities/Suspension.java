@@ -36,6 +36,6 @@ public class Suspension {
     @Column(name = "refund_suspension")
     private Boolean refundSuspension;
 
-    @Column(name = "original_suspension_end_date")
-    private Instant originalSuspensionEndDate;
+    @Column(name = "original_subscription_end_date")
+    private Instant originalSubscriptionEndDate;
 }

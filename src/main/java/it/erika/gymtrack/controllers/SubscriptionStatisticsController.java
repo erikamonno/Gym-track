@@ -21,17 +21,17 @@ public class SubscriptionStatisticsController {
         this.service = service;
     }
 
-    @GetMapping
+    @GetMapping(path = "subscription")
     private SubscriptionStatisticsDto getSubscriptionStatistics() {
         return service.getSubscriptionStatistics();
     }
 
-    @GetMapping
+    @GetMapping(path = "checkIn")
     private AccessNumberDto getNumberCheckIn(SubscriptionStatisticsFilter subscriptionStatisticsFilter) {
         return service.getNumberCheckIn(subscriptionStatisticsFilter);
     }
 
-    @GetMapping
+    @GetMapping(path = "medicalCertificate/expiring")
     private List<ExpiringCertificateDto> getMedicalCertificateExpiring() {
         return service.getMedicalCertificateExpiring();
     }

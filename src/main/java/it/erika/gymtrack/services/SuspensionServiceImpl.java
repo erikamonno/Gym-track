@@ -1,5 +1,6 @@
 package it.erika.gymtrack.services;
 
+import it.erika.gymtrack.dto.SubscriptionDto;
 import it.erika.gymtrack.dto.SuspensionDto;
 import it.erika.gymtrack.entities.Suspension;
 import it.erika.gymtrack.exceptions.SuspensionAlreadyExistInThatDateException;
@@ -10,11 +11,11 @@ import it.erika.gymtrack.mappers.SuspensionMapper;
 import it.erika.gymtrack.repository.SuspensionRepository;
 import it.erika.gymtrack.specifications.ActiveSuspensionSpecification;
 import it.erika.gymtrack.specifications.SuspensionSpecification;
-import jakarta.transaction.Transactional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-
+import org.springframework.transaction.annotation.Transactional;
+import java.time.Duration;
 import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
@@ -47,9 +48,20 @@ public class SuspensionServiceImpl implements SuspensionService{
         entity.setNote(dto.getNote());
         entity.setSubscription(subscriptionMapper.toEntity(subscriptionDto));
         entity.setRefundSuspension(dto.getRefundSuspension());
+        extendSubscription(subscriptionDto, entity);
 
         entity = repository.save(entity);
         return mapper.toDto(entity);
+    }
+
+    private void extendSubscription(SubscriptionDto subscriptionDto, Suspension entity) {
+        if(entity.getRefundSuspension()) {
+            var originalSubscriptionEndDate = subscriptionDto.getEndDate();
+            var suspensionDuration = Duration.between(entity.getStartDate(), entity.getEndDate());
+            var newEndDate = originalSubscriptionEndDate.plus(suspensionDuration);
+            entity.setOriginalSubscriptionEndDate(originalSubscriptionEndDate);
+            entity.getSubscription().setEndDate(newEndDate);
+        }
     }
 
     @Override
@@ -90,6 +102,24 @@ public class SuspensionServiceImpl implements SuspensionService{
         entity.setNote(dto.getNote());
         entity.setSubscription(subscriptionMapper.toEntity(subscriptionDto));
         entity.setRefundSuspension(dto.getRefundSuspension());
+        if(dto.getRefundSuspension()) {
+            Instant originalSubscriptionEndDate = null;
+            if(entity.getOriginalSubscriptionEndDate() != null) {
+                originalSubscriptionEndDate = entity.getOriginalSubscriptionEndDate();
+            } else {
+                originalSubscriptionEndDate = entity.getSubscription().getEndDate();
+            }
+            var suspensionDuration = Duration.between(dto.getStartDate(), dto.getEndDate());
+            var newEndDate = originalSubscriptionEndDate.plus(suspensionDuration);
+            entity.setOriginalSubscriptionEndDate(originalSubscriptionEndDate);
+            entity.getSubscription().setEndDate(newEndDate);
+        } else {
+            if(entity.getOriginalSubscriptionEndDate() != null) {
+                Instant originalEndDate = entity.getOriginalSubscriptionEndDate();
+                entity.getSubscription().setEndDate(originalEndDate);
+                entity.setOriginalSubscriptionEndDate(null);
+            }
+        }
     }
 
     @Override
