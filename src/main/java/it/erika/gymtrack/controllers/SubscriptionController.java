@@ -4,12 +4,11 @@ import it.erika.gymtrack.dto.SubscriptionDto;
 import it.erika.gymtrack.filters.SubscriptionFilter;
 import it.erika.gymtrack.services.SubscriptionService;
 import jakarta.validation.Valid;
+import java.util.UUID;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.UUID;
 
 @RestController
 @RequestMapping("subscription")
@@ -27,7 +26,7 @@ public class SubscriptionController {
     }
 
     @GetMapping("{id}")
-    public SubscriptionDto getSubscription(@PathVariable(name = "id")UUID id) {
+    public SubscriptionDto getSubscription(@PathVariable(name = "id") UUID id) {
         return service.getSubscription(id);
     }
 

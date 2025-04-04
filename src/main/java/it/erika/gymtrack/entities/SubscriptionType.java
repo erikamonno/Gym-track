@@ -1,9 +1,8 @@
 package it.erika.gymtrack.entities;
 
 import jakarta.persistence.*;
-import lombok.Data;
-
 import java.util.UUID;
+import lombok.Data;
 
 @Data
 @Entity

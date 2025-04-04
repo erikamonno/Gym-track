@@ -9,6 +9,7 @@ import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
 import lombok.Data;
 import org.springframework.data.jpa.domain.Specification;
+
 @Data
 public class CustomerSpecification implements Specification<Customer> {
 
@@ -17,18 +18,13 @@ public class CustomerSpecification implements Specification<Customer> {
     @Override
     public Predicate toPredicate(Root<Customer> root, CriteriaQuery<?> query, CriteriaBuilder criteriaBuilder) {
         return Specification.allOf(
-                nameEqual(),
-                surnameEqual(),
-                emailEqual(),
-                phoneEqual(),
-                birthDateFrom(),
-                birthDateTo()
-        ).toPredicate(root, query, criteriaBuilder);
+                        nameEqual(), surnameEqual(), emailEqual(), phoneEqual(), birthDateFrom(), birthDateTo())
+                .toPredicate(root, query, criteriaBuilder);
     }
 
     public Specification<Customer> nameEqual() {
         return (root, query, criteriaBuilder) -> {
-            if(filter.getName()==null) {
+            if (filter.getName() == null) {
                 return null;
             } else {
                 return criteriaBuilder.equal(root.get("name"), filter.getName());
@@ -38,7 +34,7 @@ public class CustomerSpecification implements Specification<Customer> {
 
     public Specification<Customer> surnameEqual() {
         return (root, query, criteriaBuilder) -> {
-            if(filter.getSurname()==null) {
+            if (filter.getSurname() == null) {
                 return null;
             } else {
                 return criteriaBuilder.equal(root.get("surname"), filter.getSurname());
@@ -48,7 +44,7 @@ public class CustomerSpecification implements Specification<Customer> {
 
     public Specification<Customer> emailEqual() {
         return (root, query, criteriaBuilder) -> {
-            if(filter.getEmail()==null) {
+            if (filter.getEmail() == null) {
                 return null;
             } else {
                 return criteriaBuilder.equal(root.get("email"), filter.getEmail());
@@ -58,7 +54,7 @@ public class CustomerSpecification implements Specification<Customer> {
 
     public Specification<Customer> phoneEqual() {
         return (root, query, criteriaBuilder) -> {
-            if(filter.getPhone()==null) {
+            if (filter.getPhone() == null) {
                 return null;
             } else {
                 return criteriaBuilder.equal(root.get("phone"), filter.getPhone());
@@ -68,7 +64,7 @@ public class CustomerSpecification implements Specification<Customer> {
 
     public Specification<Customer> birthDateTo() {
         return (root, query, criteriaBuilder) -> {
-            if(filter.getBirthDateTo()==null) {
+            if (filter.getBirthDateTo() == null) {
                 return null;
             } else {
                 return criteriaBuilder.lessThanOrEqualTo(root.get(Customer_.birthDate), filter.getBirthDateTo());
@@ -78,7 +74,7 @@ public class CustomerSpecification implements Specification<Customer> {
 
     public Specification<Customer> birthDateFrom() {
         return (root, query, criteriaBuilder) -> {
-            if(filter.getBirthDateFrom()==null) {
+            if (filter.getBirthDateFrom() == null) {
                 return null;
             } else {
                 return criteriaBuilder.greaterThanOrEqualTo(root.get(Customer_.birthDate), filter.getBirthDateFrom());

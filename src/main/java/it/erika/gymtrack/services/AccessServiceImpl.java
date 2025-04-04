@@ -1,60 +1,65 @@
 package it.erika.gymtrack.services;
 
+import it.erika.gymtrack.configurations.GymProperties;
 import it.erika.gymtrack.dto.AccessDto;
 import it.erika.gymtrack.dto.SubscriptionDto;
 import it.erika.gymtrack.dto.SubscriptionTypeDto;
 import it.erika.gymtrack.entities.*;
-
 import it.erika.gymtrack.exceptions.*;
 import it.erika.gymtrack.filters.AccessFilter;
 import it.erika.gymtrack.filters.SubscriptionFilter;
 import it.erika.gymtrack.mappers.AccessMapper;
 import it.erika.gymtrack.mappers.CustomerMapper;
+import it.erika.gymtrack.mappers.ReferenceMapper;
 import it.erika.gymtrack.repository.AccessRepository;
 import it.erika.gymtrack.specifications.AccessSpecification;
+import java.time.*;
+import java.util.Optional;
+import java.util.UUID;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import java.time.*;
-import java.util.Optional;
-import java.util.UUID;
 @Log4j2
 @Service
 public class AccessServiceImpl implements AccessService {
 
     private final AccessRepository repository;
     private final AccessMapper mapper;
-    private final CustomerMapper customerMapper;
-    private final CustomerService customerService;
     private final CertificateService certificateService;
     private final SubscriptionService subscriptionService;
     private final SuspensionService suspensionService;
+    private final GymProperties gymProperties;
+    private final ReferenceMapper referenceMapper;
 
-
-
-    public AccessServiceImpl(AccessRepository repository, AccessMapper mapper, CustomerMapper customerMapper, CustomerService customerService, CertificateService certificateService, SubscriptionService subscriptionService, SuspensionService suspensionService) {
+    public AccessServiceImpl(
+            AccessRepository repository,
+            AccessMapper mapper,
+            CertificateService certificateService,
+            SubscriptionService subscriptionService,
+            SuspensionService suspensionService,
+            GymProperties gymProperties, ReferenceMapper referenceMapper) {
         this.repository = repository;
         this.mapper = mapper;
-        this.customerMapper = customerMapper;
-        this.customerService = customerService;
         this.certificateService = certificateService;
         this.subscriptionService = subscriptionService;
         this.suspensionService = suspensionService;
+        this.gymProperties = gymProperties;
+        this.referenceMapper = referenceMapper;
     }
 
     @Override
     public AccessDto insertAccess(AccessDto dto) {
         Access entity = new Access();
         log.info("Insert access {}", dto);
-        var customerDto = customerService.getCustomer(dto.getCustomer().getId());
-        entity.setCustomer(customerMapper.toEntity(customerDto));
+        entity.setCustomer(referenceMapper.toCustomer(entity.getCustomer().getId()));
         var subscriptionDto = searchSubscription(dto.getCustomer().getId());
 
         checkGymOpen();
         checkValidSubscription(subscriptionDto);
-        suspensionService.checkActiveSuspensionAtInstant(subscriptionDto.getId(), Instant.now()); //controllo nella data corrente
+        suspensionService.checkActiveSuspensionAtInstant(
+                subscriptionDto.getId(), Instant.now()); // controllo nella data corrente
         checkValidCertificate(dto.getCustomer().getId());
         checkIfMaxDailyAccessWasExceeded(dto.getCustomer().getId(), subscriptionDto.getSubscriptionType());
 
@@ -66,43 +71,46 @@ public class AccessServiceImpl implements AccessService {
         SubscriptionFilter subscriptionFilter = new SubscriptionFilter();
         subscriptionFilter.setCustomerId(customerId);
         var page = subscriptionService.searchSubscription(Pageable.ofSize(1), subscriptionFilter);
-        if(page.isEmpty()) {
+        if (page.isEmpty()) {
             throw new SubscriptionNotFoundException("Subscription not found");
         }
         return page.stream().findFirst().get();
-
     }
 
     private void checkValidSubscription(SubscriptionDto subscriptionDto) {
         var today = Instant.now();
-        var isValidSubscription = today.isAfter(subscriptionDto.getStartDate()) || today.equals(subscriptionDto.getStartDate()) && today.isBefore(subscriptionDto.getEndDate());
-        if(!isValidSubscription) {
+        var isValidSubscription = today.isAfter(subscriptionDto.getStartDate())
+                || today.equals(subscriptionDto.getStartDate()) && today.isBefore(subscriptionDto.getEndDate());
+        if (!isValidSubscription) {
             throw new SubscriptionNotValidException("Subscription not valid");
         }
     }
 
     private void checkValidCertificate(UUID certificateId) {
-        if(!certificateService.existValidCertificate(certificateId)) {
+        if (!certificateService.existValidCertificate(certificateId)) {
             throw new CertificateNotValidException("Certificate not valid");
         }
     }
 
     private void checkGymOpen() {
-        var openTime = LocalDate.now().atTime(7,0);
-        var closeTime = LocalDate.now().atTime(LocalTime.MAX);
+        var openTime = LocalDate.now().atTime(gymProperties.schedule().opening());
+        var closeTime = LocalDate.now().atTime(gymProperties.schedule().closing());
         var now = LocalDateTime.now();
         var nowIsAfterOrEqualOpenTime = now.isAfter(openTime) || now.equals(openTime);
         var nowIsBeforeOrIsEqualCloseTime = now.isBefore(closeTime) || now.equals(closeTime);
         var isGymOpen = nowIsAfterOrEqualOpenTime && nowIsBeforeOrIsEqualCloseTime;
-        if(!isGymOpen) {
+        if (!isGymOpen) {
             throw new GymClosedException("Gym closed, the access is impossible");
         }
     }
 
     private void checkIfMaxDailyAccessWasExceeded(UUID customerId, SubscriptionTypeDto subscriptionTypeDto) {
-        if(subscriptionTypeDto.getMaxDailyAccesses() != null) {
+        if (subscriptionTypeDto.getMaxDailyAccesses() != null) {
             var startDay = LocalDate.now().atStartOfDay(ZoneId.systemDefault()).toInstant();
-            var endDay = LocalDate.now().atStartOfDay(ZoneId.systemDefault()).with(LocalTime.MAX).toInstant();
+            var endDay = LocalDate.now()
+                    .atStartOfDay(ZoneId.systemDefault())
+                    .with(LocalTime.MAX)
+                    .toInstant();
             AccessFilter filter = new AccessFilter();
 
             filter.setCustomerId(customerId);
@@ -111,17 +119,16 @@ public class AccessServiceImpl implements AccessService {
 
             var customerDailyAccessList = searchAccess(Pageable.ofSize(1), filter);
 
-            if(customerDailyAccessList.getTotalElements() >= subscriptionTypeDto.getMaxDailyAccesses()) {
+            if (customerDailyAccessList.getTotalElements() >= subscriptionTypeDto.getMaxDailyAccesses()) {
                 throw new MaxDailyAccessExceededException("Access not permitted, max daily access was exceeded");
             }
         }
     }
 
-
     @Override
     public AccessDto getAccess(UUID id) {
         Optional<Access> oEntity = repository.findById(id);
-        if(oEntity.isEmpty()) {
+        if (oEntity.isEmpty()) {
             throw new AccessNotFoundException("Access not found");
         }
         var entity = oEntity.get();
@@ -132,7 +139,6 @@ public class AccessServiceImpl implements AccessService {
     public Page<AccessDto> searchAccess(Pageable pageable, AccessFilter filter) {
         return repository.findAll(new AccessSpecification(filter), pageable).map(access -> mapper.toDto(access));
     }
-
 
     @Override
     public void deleteAccess(UUID id) {

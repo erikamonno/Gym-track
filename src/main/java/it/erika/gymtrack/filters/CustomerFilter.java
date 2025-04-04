@@ -1,11 +1,7 @@
 package it.erika.gymtrack.filters;
 
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotBlank;
-import lombok.Data;
-
-import java.time.Instant;
 import java.time.LocalDate;
+import lombok.Data;
 
 @Data
 public class CustomerFilter {

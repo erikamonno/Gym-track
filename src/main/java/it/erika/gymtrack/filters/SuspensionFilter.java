@@ -1,10 +1,9 @@
 package it.erika.gymtrack.filters;
 
 import it.erika.gymtrack.enumes.Reason;
-import lombok.Data;
-
 import java.time.Instant;
 import java.util.UUID;
+import lombok.Data;
 
 @Data
 public class SuspensionFilter {
@@ -20,5 +19,4 @@ public class SuspensionFilter {
     private Reason reason;
 
     private UUID subscriptionId;
-
 }

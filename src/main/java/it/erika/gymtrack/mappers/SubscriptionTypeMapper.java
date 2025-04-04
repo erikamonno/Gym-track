@@ -8,5 +8,6 @@ import org.mapstruct.Mapper;
 public interface SubscriptionTypeMapper {
 
     SubscriptionTypeDto toDto(SubscriptionType entity);
+
     SubscriptionType toEntity(SubscriptionTypeDto dto);
 }

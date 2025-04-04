@@ -1,11 +1,8 @@
 package it.erika.gymtrack.filters;
 
-
-import jakarta.validation.constraints.NotBlank;
-import lombok.Data;
-
 import java.time.Instant;
 import java.util.UUID;
+import lombok.Data;
 
 @Data
 public class SubscriptionFilter {

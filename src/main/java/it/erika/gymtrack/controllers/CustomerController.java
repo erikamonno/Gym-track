@@ -4,12 +4,11 @@ import it.erika.gymtrack.dto.CustomerDto;
 import it.erika.gymtrack.filters.CustomerFilter;
 import it.erika.gymtrack.services.CustomerService;
 import jakarta.validation.Valid;
+import java.util.UUID;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.UUID;
 
 @RestController
 @RequestMapping("customer")

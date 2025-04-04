@@ -2,7 +2,6 @@ package it.erika.gymtrack.specifications;
 
 import it.erika.gymtrack.entities.SubscriptionType;
 import it.erika.gymtrack.entities.SubscriptionType_;
-import it.erika.gymtrack.filters.SubscriptionFilter;
 import it.erika.gymtrack.filters.SubscriptionTypeFilter;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
@@ -18,16 +17,13 @@ public class SubscriptionTypeSpecification implements Specification<Subscription
 
     @Override
     public Predicate toPredicate(Root<SubscriptionType> root, CriteriaQuery<?> query, CriteriaBuilder criteriaBuilder) {
-        return Specification.allOf(
-                nameEqual(),
-                durationInDaysFrom(),
-                durationInDaysTo()
-        ).toPredicate(root, query, criteriaBuilder);
+        return Specification.allOf(nameEqual(), durationInDaysFrom(), durationInDaysTo())
+                .toPredicate(root, query, criteriaBuilder);
     }
 
     public Specification<SubscriptionType> nameEqual() {
         return (root, query, criteriaBuilder) -> {
-            if(filter.getName()==null) {
+            if (filter.getName() == null) {
                 return null;
             } else {
                 return criteriaBuilder.equal(root.get(SubscriptionType_.name), filter.getName());
@@ -40,17 +36,19 @@ public class SubscriptionTypeSpecification implements Specification<Subscription
             if (filter.getDurationInDaysFrom() == null) {
                 return null;
             } else {
-                return criteriaBuilder.greaterThanOrEqualTo(root.get(SubscriptionType_.durationInDays), filter.getDurationInDaysFrom());
+                return criteriaBuilder.greaterThanOrEqualTo(
+                        root.get(SubscriptionType_.durationInDays), filter.getDurationInDaysFrom());
             }
         };
     }
 
     public Specification<SubscriptionType> durationInDaysTo() {
         return (root, query, criteriaBuilder) -> {
-            if(filter.getDurationInDaysTo()==null) {
+            if (filter.getDurationInDaysTo() == null) {
                 return null;
             } else {
-                return criteriaBuilder.lessThanOrEqualTo(root.get(SubscriptionType_.durationInDays), filter.getDurationInDaysTo());
+                return criteriaBuilder.lessThanOrEqualTo(
+                        root.get(SubscriptionType_.durationInDays), filter.getDurationInDaysTo());
             }
         };
     }

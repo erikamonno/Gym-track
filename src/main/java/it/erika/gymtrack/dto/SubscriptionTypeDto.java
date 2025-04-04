@@ -2,9 +2,8 @@ package it.erika.gymtrack.dto;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
-import lombok.Data;
-
 import java.util.UUID;
+import lombok.Data;
 
 @Data
 public class SubscriptionTypeDto {
@@ -16,8 +15,7 @@ public class SubscriptionTypeDto {
 
     private String description;
 
-    @NotNull
-    private Integer durationInDays;
+    @NotNull private Integer durationInDays;
 
     private Integer maxDailyAccesses;
 }

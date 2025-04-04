@@ -2,10 +2,8 @@ package it.erika.gymtrack.specifications;
 
 import it.erika.gymtrack.entities.Access;
 import it.erika.gymtrack.entities.Access_;
-import it.erika.gymtrack.entities.Customer;
 import it.erika.gymtrack.entities.Customer_;
 import it.erika.gymtrack.filters.AccessFilter;
-import it.erika.gymtrack.filters.CustomerFilter;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
 import jakarta.persistence.criteria.Predicate;
@@ -20,16 +18,13 @@ public class AccessSpecification implements Specification<Access> {
 
     @Override
     public Predicate toPredicate(Root<Access> root, CriteriaQuery<?> query, CriteriaBuilder criteriaBuilder) {
-        return Specification.allOf(
-                accessDateFrom(),
-                accessDateTo(),
-                customerIdEqual()
-        ).toPredicate(root, query, criteriaBuilder);
+        return Specification.allOf(accessDateFrom(), accessDateTo(), customerIdEqual())
+                .toPredicate(root, query, criteriaBuilder);
     }
 
     public Specification<Access> accessDateFrom() {
         return (root, query, criteriaBuilder) -> {
-            if(filter.getAccessDateFrom()==null) {
+            if (filter.getAccessDateFrom() == null) {
                 return null;
             } else {
                 return criteriaBuilder.greaterThanOrEqualTo(root.get("accessDate"), filter.getAccessDateFrom());
@@ -39,7 +34,7 @@ public class AccessSpecification implements Specification<Access> {
 
     public Specification<Access> accessDateTo() {
         return (root, query, criteriaBuilder) -> {
-            if(filter.getAccessDateTo()==null) {
+            if (filter.getAccessDateTo() == null) {
                 return null;
             } else {
                 return criteriaBuilder.lessThanOrEqualTo(root.get("accessDate"), filter.getAccessDateTo());
@@ -49,13 +44,11 @@ public class AccessSpecification implements Specification<Access> {
 
     public Specification<Access> customerIdEqual() {
         return (root, query, criteriaBuilder) -> {
-            if(filter.getCustomerId()==null) {
+            if (filter.getCustomerId() == null) {
                 return null;
             } else {
                 return criteriaBuilder.equal(root.get(Access_.customer).get(Customer_.id), filter.getCustomerId());
             }
         };
     }
-
-
 }

@@ -1,6 +1,5 @@
 package it.erika.gymtrack.specifications;
 
-import it.erika.gymtrack.dto.SuspensionDto;
 import it.erika.gymtrack.entities.Subscription_;
 import it.erika.gymtrack.entities.Suspension;
 import it.erika.gymtrack.entities.Suspension_;
@@ -8,11 +7,10 @@ import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
 import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
-import lombok.Data;
-import org.springframework.data.jpa.domain.Specification;
-
 import java.time.Instant;
 import java.util.UUID;
+import lombok.Data;
+import org.springframework.data.jpa.domain.Specification;
 
 @Data
 public class ActiveSuspensionSpecification implements Specification<Suspension> {
@@ -23,9 +21,8 @@ public class ActiveSuspensionSpecification implements Specification<Suspension> 
     @Override
     public Predicate toPredicate(Root<Suspension> root, CriteriaQuery<?> query, CriteriaBuilder criteriaBuilder) {
         return subscriptionIdEqual()
-                .and(
-                        endDateGreaterThenOrEqualTo().or(endDateIsNull())
-                ).toPredicate(root, query, criteriaBuilder);
+                .and(endDateGreaterThenOrEqualTo().or(endDateIsNull()))
+                .toPredicate(root, query, criteriaBuilder);
     }
 
     private Specification<Suspension> subscriptionIdEqual() {
@@ -39,8 +36,6 @@ public class ActiveSuspensionSpecification implements Specification<Suspension> 
     }
 
     private Specification<Suspension> endDateIsNull() {
-        return (root, query, criteriaBuilder) ->
-                criteriaBuilder.isNull(root.get(Suspension_.endDate));
+        return (root, query, criteriaBuilder) -> criteriaBuilder.isNull(root.get(Suspension_.endDate));
     }
-
 }

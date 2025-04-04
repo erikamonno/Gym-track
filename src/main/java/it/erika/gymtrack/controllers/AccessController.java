@@ -4,12 +4,11 @@ import it.erika.gymtrack.dto.AccessDto;
 import it.erika.gymtrack.filters.AccessFilter;
 import it.erika.gymtrack.services.AccessService;
 import jakarta.validation.Valid;
+import java.util.UUID;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.UUID;
 
 @RestController
 @RequestMapping("access")
@@ -27,7 +26,7 @@ public class AccessController {
     }
 
     @GetMapping("{id}")
-    public AccessDto getAccess(@PathVariable(name = "id")UUID id) {
+    public AccessDto getAccess(@PathVariable(name = "id") UUID id) {
         return service.getAccess(id);
     }
 

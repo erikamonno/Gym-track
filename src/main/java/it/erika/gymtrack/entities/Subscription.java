@@ -1,15 +1,13 @@
 package it.erika.gymtrack.entities;
 
 import jakarta.persistence.*;
-import lombok.Data;
-
 import java.time.Instant;
 import java.util.UUID;
+import lombok.Data;
 
 @Entity
 @Table(name = "subscription")
 @Data
-
 public class Subscription {
 
     @Id

@@ -8,14 +8,13 @@ import it.erika.gymtrack.mappers.CustomerMapper;
 import it.erika.gymtrack.repository.CustomerRepository;
 import it.erika.gymtrack.specifications.CustomerSpecification;
 import jakarta.transaction.Transactional;
+import java.util.Optional;
+import java.util.UUID;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
-import java.util.Optional;
-import java.util.UUID;
 @Log4j2
 @Service
 public class CustomerServiceImpl implements CustomerService {
@@ -45,13 +44,12 @@ public class CustomerServiceImpl implements CustomerService {
     @Override
     public CustomerDto getCustomer(UUID id) {
         Optional<Customer> oEntity = repository.findById(id);
-        if(oEntity.isEmpty()) {
+        if (oEntity.isEmpty()) {
             throw new CustomerNotFoundException("Customer not found");
         }
         var entity = oEntity.get();
         return mapper.toDto(entity);
     }
-
 
     @Override
     public Page<CustomerDto> searchCustomer(Pageable pageable, CustomerFilter filter) {
@@ -62,7 +60,7 @@ public class CustomerServiceImpl implements CustomerService {
     @Transactional
     public void updateCustomer(UUID id, CustomerDto dto) {
         Optional<Customer> oEntity = repository.findById(id);
-        if(oEntity.isEmpty()) {
+        if (oEntity.isEmpty()) {
             throw new CustomerNotFoundException("Customer not found");
         }
         var entity = oEntity.get();

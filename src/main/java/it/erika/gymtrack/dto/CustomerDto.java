@@ -1,13 +1,10 @@
 package it.erika.gymtrack.dto;
 
-import jakarta.persistence.Column;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
-import lombok.Data;
-
-import java.time.Instant;
 import java.time.LocalDate;
 import java.util.UUID;
+import lombok.Data;
 
 @Data
 public class CustomerDto {

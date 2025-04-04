@@ -1,16 +1,13 @@
 package it.erika.gymtrack.entities;
 
 import jakarta.persistence.*;
-import lombok.Data;
-import org.hibernate.annotations.CreationTimestamp;
-
 import java.time.Instant;
 import java.util.UUID;
+import lombok.Data;
 
 @Entity
 @Table(name = "certificate")
 @Data
-
 public class Certificate {
 
     @Id

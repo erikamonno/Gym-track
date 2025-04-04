@@ -5,13 +5,12 @@ import it.erika.gymtrack.entities.Certificate;
 import it.erika.gymtrack.exceptions.CertificateNotFoundException;
 import it.erika.gymtrack.mappers.CertificateMapper;
 import it.erika.gymtrack.repository.CertificateRepository;
-import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
-
 import java.io.IOException;
 import java.time.Instant;
 import java.util.Optional;
 import java.util.UUID;
+import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 @Service
 public class CertificateServiceImpl implements CertificateService {
@@ -37,7 +36,7 @@ public class CertificateServiceImpl implements CertificateService {
     @Override
     public CertificateDto getById(UUID id) {
         Optional<Certificate> oEntity = repository.findById(id);
-        if(oEntity.isEmpty()) {
+        if (oEntity.isEmpty()) {
             throw new CertificateNotFoundException("Certificate not found");
         }
         var entity = oEntity.get();
@@ -47,7 +46,7 @@ public class CertificateServiceImpl implements CertificateService {
     @Override
     public boolean existValidCertificate(UUID id) {
         Optional<Certificate> oEntity = repository.findById(id);
-        if(oEntity.isEmpty()) {
+        if (oEntity.isEmpty()) {
             throw new CertificateNotFoundException("Certificate not found");
         }
         var entity = oEntity.get();

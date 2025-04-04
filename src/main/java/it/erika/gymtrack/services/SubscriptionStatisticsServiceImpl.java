@@ -1,25 +1,19 @@
 package it.erika.gymtrack.services;
 
 import it.erika.gymtrack.dto.AccessNumberDto;
-import it.erika.gymtrack.dto.CertificateDto;
 import it.erika.gymtrack.dto.ExpiringCertificateDto;
 import it.erika.gymtrack.dto.SubscriptionStatisticsDto;
 import it.erika.gymtrack.entities.Certificate;
 import it.erika.gymtrack.filters.SubscriptionStatisticsFilter;
 import it.erika.gymtrack.repository.AccessRepository;
 import it.erika.gymtrack.repository.CertificateRepository;
-import it.erika.gymtrack.repository.CustomerRepository;
 import it.erika.gymtrack.repository.SubscriptionRepository;
 import it.erika.gymtrack.specifications.*;
-import org.springframework.data.jpa.domain.Specification;
-import org.springframework.stereotype.Service;
-
-
 import java.time.Duration;
 import java.time.LocalDate;
 import java.time.ZoneId;
-import java.util.ArrayList;
 import java.util.List;
+import org.springframework.stereotype.Service;
 
 @Service
 public class SubscriptionStatisticsServiceImpl implements SubscriptionStatisticsService {
@@ -29,7 +23,11 @@ public class SubscriptionStatisticsServiceImpl implements SubscriptionStatistics
     private final CertificateRepository certificateRepository;
     private final CustomerService customerService;
 
-    public SubscriptionStatisticsServiceImpl(SubscriptionRepository subscriptionRepository, AccessRepository accessRepository, CertificateRepository certificateRepository, CustomerService customerService) {
+    public SubscriptionStatisticsServiceImpl(
+            SubscriptionRepository subscriptionRepository,
+            AccessRepository accessRepository,
+            CertificateRepository certificateRepository,
+            CustomerService customerService) {
         this.subscriptionRepository = subscriptionRepository;
         this.accessRepository = accessRepository;
         this.certificateRepository = certificateRepository;
@@ -41,7 +39,8 @@ public class SubscriptionStatisticsServiceImpl implements SubscriptionStatistics
         var activeSubscriptionNumber = subscriptionRepository.count(new ActiveSubscriptionSpecification());
         var expiredSubscriptionNumber = subscriptionRepository.count(new ExpiredSubscriptionSpecification());
         var duration = Duration.ofDays(30);
-        var expiringSoonSubscription = subscriptionRepository.count(new ExpiringSoonSubscriptionSpecification(duration));
+        var expiringSoonSubscription =
+                subscriptionRepository.count(new ExpiringSoonSubscriptionSpecification(duration));
         SubscriptionStatisticsDto dto = new SubscriptionStatisticsDto();
         dto.setActive(activeSubscriptionNumber);
         dto.setExpired(expiredSubscriptionNumber);
@@ -60,11 +59,9 @@ public class SubscriptionStatisticsServiceImpl implements SubscriptionStatistics
     @Override
     public List<ExpiringCertificateDto> getMedicalCertificateExpiring() {
         var duration = Duration.ofDays(30);
-        return certificateRepository.findAll(new ExpiringCertificateSpecification(duration))
-                .stream()
+        return certificateRepository.findAll(new ExpiringCertificateSpecification(duration)).stream()
                 .map(certificate -> toDto(certificate))
                 .toList();
-
     }
 
     private ExpiringCertificateDto toDto(Certificate certificate) {

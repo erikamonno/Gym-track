@@ -2,10 +2,10 @@ package it.erika.gymtrack.entities;
 
 import it.erika.gymtrack.enumes.Reason;
 import jakarta.persistence.*;
-import lombok.Data;
-
 import java.time.Instant;
 import java.util.UUID;
+import lombok.Data;
+
 @Data
 @Entity
 @Table(name = "suspension")
@@ -29,7 +29,9 @@ public class Suspension {
     @Column(name = "note")
     private String note;
 
-    @ManyToOne
+    @ManyToOne(
+            fetch = FetchType.LAZY,
+            optional = false) // quando salvo una suspension ci deve essere per forza una subscription
     @JoinColumn(name = "subscription_id")
     private Subscription subscription;
 

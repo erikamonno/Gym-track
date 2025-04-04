@@ -2,18 +2,13 @@ package it.erika.gymtrack.controllers;
 
 import it.erika.gymtrack.dto.SuspensionDto;
 import it.erika.gymtrack.filters.SuspensionFilter;
-import it.erika.gymtrack.mappers.SubscriptionMapper;
-import it.erika.gymtrack.mappers.SuspensionMapper;
-import it.erika.gymtrack.repository.SuspensionRepository;
-import it.erika.gymtrack.services.SubscriptionService;
 import it.erika.gymtrack.services.SuspensionService;
 import jakarta.validation.Valid;
+import java.util.UUID;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.UUID;
 
 @RestController
 @RequestMapping("suspension")

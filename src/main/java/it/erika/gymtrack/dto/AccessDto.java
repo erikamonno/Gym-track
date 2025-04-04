@@ -1,16 +1,9 @@
 package it.erika.gymtrack.dto;
 
-import it.erika.gymtrack.entities.Customer;
-import jakarta.persistence.Column;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
-import lombok.Data;
-import org.hibernate.annotations.CreationTimestamp;
-
 import java.time.Instant;
 import java.util.UUID;
+import lombok.Data;
 
 @Data
 public class AccessDto {
@@ -19,6 +12,5 @@ public class AccessDto {
 
     private Instant accessDate;
 
-    @NotNull
-    private CustomerDto customer;
+    @NotNull private CustomerDto customer;
 }

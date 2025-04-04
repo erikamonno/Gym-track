@@ -9,8 +9,8 @@ import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
 import lombok.Data;
 import org.springframework.data.jpa.domain.Specification;
-@Data
 
+@Data
 public class NumberCheckInSpecification implements Specification<Access> {
 
     private final SubscriptionStatisticsFilter filter;
@@ -23,6 +23,5 @@ public class NumberCheckInSpecification implements Specification<Access> {
     private Specification<Access> getNumberCheckInBetween() {
         return (root, query, criteriaBuilder) ->
                 criteriaBuilder.between(root.get(Access_.accessDate), filter.getStartDate(), filter.getEndDate());
-
     }
 }

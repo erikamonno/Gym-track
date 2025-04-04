@@ -8,5 +8,6 @@ import org.mapstruct.Mapper;
 public interface SuspensionMapper {
 
     SuspensionDto toDto(Suspension entity);
+
     Suspension toEntity(SuspensionDto dto);
 }

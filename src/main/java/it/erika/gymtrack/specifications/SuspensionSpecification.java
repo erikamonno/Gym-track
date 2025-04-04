@@ -19,18 +19,18 @@ public class SuspensionSpecification implements Specification<Suspension> {
     @Override
     public Predicate toPredicate(Root<Suspension> root, CriteriaQuery<?> query, CriteriaBuilder criteriaBuilder) {
         return Specification.allOf(
-                startDateFrom(),
-                startDateTo(),
-                endDateFrom(),
-                endDateTo(),
-                reasonEqual(),
-                subscriptionIdEqual()
-        ).toPredicate(root, query, criteriaBuilder);
+                        startDateFrom(),
+                        startDateTo(),
+                        endDateFrom(),
+                        endDateTo(),
+                        reasonEqual(),
+                        subscriptionIdEqual())
+                .toPredicate(root, query, criteriaBuilder);
     }
 
     private Specification<Suspension> startDateFrom() {
         return (root, query, criteriaBuilder) -> {
-            if(filter.getStartDateFrom()==null) {
+            if (filter.getStartDateFrom() == null) {
                 return null;
             } else {
                 return criteriaBuilder.greaterThanOrEqualTo(root.get(Suspension_.startDate), filter.getStartDateFrom());
@@ -40,7 +40,7 @@ public class SuspensionSpecification implements Specification<Suspension> {
 
     private Specification<Suspension> startDateTo() {
         return (root, query, criteriaBuilder) -> {
-            if(filter.getStartDateTo()==null) {
+            if (filter.getStartDateTo() == null) {
                 return null;
             } else {
                 return criteriaBuilder.lessThanOrEqualTo(root.get(Suspension_.startDate), filter.getStartDateTo());
@@ -50,7 +50,7 @@ public class SuspensionSpecification implements Specification<Suspension> {
 
     private Specification<Suspension> endDateFrom() {
         return (root, query, criteriaBuilder) -> {
-            if(filter.getEndDateFrom()==null) {
+            if (filter.getEndDateFrom() == null) {
                 return null;
             } else {
                 return criteriaBuilder.greaterThanOrEqualTo(root.get(Suspension_.endDate), filter.getEndDateFrom());
@@ -60,7 +60,7 @@ public class SuspensionSpecification implements Specification<Suspension> {
 
     private Specification<Suspension> endDateTo() {
         return (root, query, criteriaBuilder) -> {
-            if(filter.getEndDateTo()==null) {
+            if (filter.getEndDateTo() == null) {
                 return null;
             } else {
                 return criteriaBuilder.lessThanOrEqualTo(root.get(Suspension_.endDate), filter.getEndDateTo());
@@ -68,10 +68,9 @@ public class SuspensionSpecification implements Specification<Suspension> {
         };
     }
 
-
     private Specification<Suspension> reasonEqual() {
         return (root, query, criteriaBuilder) -> {
-            if(filter.getReason()==null) {
+            if (filter.getReason() == null) {
                 return null;
             } else {
                 return criteriaBuilder.equal(root.get(Suspension_.reason), filter.getReason());
@@ -81,10 +80,11 @@ public class SuspensionSpecification implements Specification<Suspension> {
 
     private Specification<Suspension> subscriptionIdEqual() {
         return (root, query, criteriaBuilder) -> {
-            if(filter.getSubscriptionId()==null) {
+            if (filter.getSubscriptionId() == null) {
                 return null;
             } else {
-                return criteriaBuilder.equal(root.get(Suspension_.subscription).get(Subscription_.id), filter.getSubscriptionId());
+                return criteriaBuilder.equal(
+                        root.get(Suspension_.subscription).get(Subscription_.id), filter.getSubscriptionId());
             }
         };
     }
