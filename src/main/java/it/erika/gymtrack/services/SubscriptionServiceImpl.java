@@ -24,18 +24,16 @@ public class SubscriptionServiceImpl implements SubscriptionService {
     private final SubscriptionMapper mapper;
     private final SubscriptionRepository repository;
     private final SubscriptionTypeService subscriptionTypeService;
-    private final SubscriptionTypeMapper subscriptionTypeMapper;
     private final ReferenceMapper referenceMapper;
 
     public SubscriptionServiceImpl(
             SubscriptionMapper mapper,
             SubscriptionRepository repository,
             SubscriptionTypeService subscriptionTypeService,
-            SubscriptionTypeMapper subscriptionTypeMapper, ReferenceMapper referenceMapper) {
+            ReferenceMapper referenceMapper) {
         this.mapper = mapper;
         this.repository = repository;
         this.subscriptionTypeService = subscriptionTypeService;
-        this.subscriptionTypeMapper = subscriptionTypeMapper;
         this.referenceMapper = referenceMapper;
     }
 
@@ -51,8 +49,8 @@ public class SubscriptionServiceImpl implements SubscriptionService {
             entity.setEndDate(dto.getEndDate());
         }
         entity.setStartDate(dto.getStartDate());
-        entity.setSubscriptionType(subscriptionTypeMapper.toEntity(subscriptionTypeDto));
-        entity.setCustomer(referenceMapper.toCustomer(entity.getCustomer().getId()));
+        entity.setSubscriptionType(referenceMapper.toSubscriptionType(dto.getSubscriptionType().getId()));
+        entity.setCustomer(referenceMapper.toCustomer(dto.getCustomer().getId()));
         entity = repository.save(entity);
         return mapper.toDto(entity);
     }
@@ -82,12 +80,10 @@ public class SubscriptionServiceImpl implements SubscriptionService {
             throw new SubscriptionNotFoundException("Subscription not found");
         }
         var entity = oEntity.get();
-        var subscriptionTypeDto = subscriptionTypeService.readOneSubscriptionType(
-                dto.getSubscriptionType().getId());
         entity.setStartDate(dto.getStartDate());
         entity.setEndDate(dto.getEndDate());
-        entity.setSubscriptionType(subscriptionTypeMapper.toEntity(subscriptionTypeDto));
-        entity.setCustomer(referenceMapper.toCustomer(entity.getCustomer().getId()));
+        entity.setSubscriptionType(referenceMapper.toSubscriptionType(dto.getId()));
+        entity.setCustomer(referenceMapper.toCustomer(dto.getCustomer().getId()));
     }
 
     @Override
