@@ -1,6 +1,6 @@
 package it.erika.gymtrack.services;
 
-import it.erika.gymtrack.configurations.GymProperties;
+import it.erika.gymtrack.configurations.GymScheduleProperties;
 import it.erika.gymtrack.dto.AccessDto;
 import it.erika.gymtrack.dto.SubscriptionDto;
 import it.erika.gymtrack.dto.SubscriptionTypeDto;
@@ -9,7 +9,6 @@ import it.erika.gymtrack.exceptions.*;
 import it.erika.gymtrack.filters.AccessFilter;
 import it.erika.gymtrack.filters.SubscriptionFilter;
 import it.erika.gymtrack.mappers.AccessMapper;
-import it.erika.gymtrack.mappers.CustomerMapper;
 import it.erika.gymtrack.mappers.ReferenceMapper;
 import it.erika.gymtrack.repository.AccessRepository;
 import it.erika.gymtrack.specifications.AccessSpecification;
@@ -30,7 +29,7 @@ public class AccessServiceImpl implements AccessService {
     private final CertificateService certificateService;
     private final SubscriptionService subscriptionService;
     private final SuspensionService suspensionService;
-    private final GymProperties gymProperties;
+    private final GymScheduleProperties gymProperties;
     private final ReferenceMapper referenceMapper;
 
     public AccessServiceImpl(
@@ -39,7 +38,7 @@ public class AccessServiceImpl implements AccessService {
             CertificateService certificateService,
             SubscriptionService subscriptionService,
             SuspensionService suspensionService,
-            GymProperties gymProperties, ReferenceMapper referenceMapper) {
+            GymScheduleProperties gymProperties, ReferenceMapper referenceMapper) {
         this.repository = repository;
         this.mapper = mapper;
         this.certificateService = certificateService;

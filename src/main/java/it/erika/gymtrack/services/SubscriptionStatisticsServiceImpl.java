@@ -1,5 +1,6 @@
 package it.erika.gymtrack.services;
 
+import it.erika.gymtrack.configurations.GymStatisticsProperties;
 import it.erika.gymtrack.dto.AccessNumberDto;
 import it.erika.gymtrack.dto.ExpiringCertificateDto;
 import it.erika.gymtrack.dto.SubscriptionStatisticsDto;
@@ -22,23 +23,25 @@ public class SubscriptionStatisticsServiceImpl implements SubscriptionStatistics
     private final AccessRepository accessRepository;
     private final CertificateRepository certificateRepository;
     private final CustomerService customerService;
+    private final GymStatisticsProperties gymStatisticsProperties;
 
     public SubscriptionStatisticsServiceImpl(
             SubscriptionRepository subscriptionRepository,
             AccessRepository accessRepository,
             CertificateRepository certificateRepository,
-            CustomerService customerService) {
+            CustomerService customerService, GymStatisticsProperties gymStatisticsProperties) {
         this.subscriptionRepository = subscriptionRepository;
         this.accessRepository = accessRepository;
         this.certificateRepository = certificateRepository;
         this.customerService = customerService;
+        this.gymStatisticsProperties = gymStatisticsProperties;
     }
 
     @Override
     public SubscriptionStatisticsDto getSubscriptionStatistics() {
         var activeSubscriptionNumber = subscriptionRepository.count(new ActiveSubscriptionSpecification());
         var expiredSubscriptionNumber = subscriptionRepository.count(new ExpiredSubscriptionSpecification());
-        var duration = Duration.ofDays(30);
+        var duration = gymStatisticsProperties.subscription().expiringSoon();
         var expiringSoonSubscription =
                 subscriptionRepository.count(new ExpiringSoonSubscriptionSpecification(duration));
         SubscriptionStatisticsDto dto = new SubscriptionStatisticsDto();
@@ -58,7 +61,7 @@ public class SubscriptionStatisticsServiceImpl implements SubscriptionStatistics
 
     @Override
     public List<ExpiringCertificateDto> getMedicalCertificateExpiring() {
-        var duration = Duration.ofDays(30);
+        var duration = gymStatisticsProperties.certificates().expiringSoon();
         return certificateRepository.findAll(new ExpiringCertificateSpecification(duration)).stream()
                 .map(certificate -> toDto(certificate))
                 .toList();
