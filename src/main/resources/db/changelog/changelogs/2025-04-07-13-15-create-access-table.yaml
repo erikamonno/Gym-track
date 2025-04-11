@@ -1,0 +1,26 @@
+databaseChangeLog:
+  - changeSet:
+      id: 0
+      author: Erika Monno
+      changes:
+        - createTable:
+            tableName: access
+            columns:
+              - column:
+                  name: id
+                  type: uuid
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: customer_id
+                  type: uuid
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_access_customer_id
+                    referencedTableName: customer
+                    referencedColumnNames: id
+              - column:
+                  name: access_date
+                  type: timestamp with time zone
+                  constraints:
+                    nullable: false
