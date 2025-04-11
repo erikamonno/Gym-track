@@ -1,0 +1,68 @@
+databaseChangeLog:
+  - changeSet:
+      id: 0
+      author: Erika Monno
+      changes:
+        - createTable:
+            tableName: subscription_type
+            columns:
+              - column:
+                  name: id
+                  type: uuid
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: name
+                  type: varchar(50)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: description
+                  type: varchar(50)
+              - column:
+                  name: duration_in_days
+                  type: integer
+                  constraints:
+                    nullable: false
+              - column:
+                  name: max_daily_accesses
+                  type: integer
+  - changeSet:
+      id: 1
+      author: Erika Monno
+      changes:
+        - insert:
+            tableName: subscription_type
+            columns:
+              - column:
+                  name: id
+                  valueComputed: gen_random_uuid()
+              - column:
+                  name: name
+                  value: normal
+              - column:
+                  name: description
+                  value: 'abbonamento annuale normale'
+              - column:
+                  name: duration_in_days
+                  value: 365
+              - column:
+                  name: max_daily_accesses
+                  value: 1
+        - insert:
+            tableName: subscription_type
+            columns:
+              - column:
+                  name: id
+                  valueComputed: gen_random_uuid()
+              - column:
+                  name: name
+                  value: gold
+              - column:
+                  name: description
+                  value: 'abbonamento annuale gold'
+              - column:
+                  name: duration_in_days
+                  value: 365
+
+

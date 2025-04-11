@@ -9,9 +9,9 @@ import java.time.Duration;
 
 @Validated
 @ConfigurationProperties(prefix = "statistics")
-public record GymStatisticsProperties(@Valid @NotNull Certificates certificates, @Valid @NotNull Subscription subscription) {
+public record GymStatisticsProperties(@Valid @NotNull Certificates certificates, @Valid @NotNull Subscriptions subscriptions) {
 
     public record Certificates(@NotNull Duration expiringSoon) {}
 
-    public record Subscription(@NotNull Duration expiringSoon) {}
+    public record Subscriptions(@NotNull Duration expiringSoon) {}
 }

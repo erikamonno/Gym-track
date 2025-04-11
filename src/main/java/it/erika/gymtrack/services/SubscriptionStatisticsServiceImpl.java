@@ -41,7 +41,7 @@ public class SubscriptionStatisticsServiceImpl implements SubscriptionStatistics
     public SubscriptionStatisticsDto getSubscriptionStatistics() {
         var activeSubscriptionNumber = subscriptionRepository.count(new ActiveSubscriptionSpecification());
         var expiredSubscriptionNumber = subscriptionRepository.count(new ExpiredSubscriptionSpecification());
-        var duration = gymStatisticsProperties.subscription().expiringSoon();
+        var duration = gymStatisticsProperties.subscriptions().expiringSoon();
         var expiringSoonSubscription =
                 subscriptionRepository.count(new ExpiringSoonSubscriptionSpecification(duration));
         SubscriptionStatisticsDto dto = new SubscriptionStatisticsDto();

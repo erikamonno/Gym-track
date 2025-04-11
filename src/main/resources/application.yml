@@ -5,9 +5,13 @@ spring:
       hibernate:
         globally_quoted_identifiers: true
   datasource:
-    url: jdbc:postgresql://localhost:5432/gym
+    url: jdbc:postgresql://localhost:5432/gym_liquibase
     username: postgres
     password: postgres
+
+logging:
+  level:  #vado ed eliminare gli ultimi due livelli di di log che in questo momento non servono e appesantirebbero solo i log
+    root: INFO         #con info abbiamo informazioni quasi sempre utili
 
 gym:
   schedule:
@@ -16,6 +20,6 @@ gym:
 
 statistics:
   certificates:
-    expiring-soon: PT30D
+    expiring-soon: P30D
   subscriptions:
-    expiring-soon: PT30D
+    expiring-soon: P30D
