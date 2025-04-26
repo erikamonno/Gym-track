@@ -4,10 +4,8 @@ import it.erika.gymtrack.dto.SubscriptionDto;
 import it.erika.gymtrack.entities.Subscription;
 import it.erika.gymtrack.exceptions.SubscriptionNotFoundException;
 import it.erika.gymtrack.filters.SubscriptionFilter;
-import it.erika.gymtrack.mappers.CustomerMapper;
 import it.erika.gymtrack.mappers.ReferenceMapper;
 import it.erika.gymtrack.mappers.SubscriptionMapper;
-import it.erika.gymtrack.mappers.SubscriptionTypeMapper;
 import it.erika.gymtrack.repository.SubscriptionRepository;
 import it.erika.gymtrack.specifications.SubscriptionSpecification;
 import jakarta.transaction.Transactional;
@@ -49,7 +47,8 @@ public class SubscriptionServiceImpl implements SubscriptionService {
             entity.setEndDate(dto.getEndDate());
         }
         entity.setStartDate(dto.getStartDate());
-        entity.setSubscriptionType(referenceMapper.toSubscriptionType(dto.getSubscriptionType().getId()));
+        entity.setSubscriptionType(
+                referenceMapper.toSubscriptionType(dto.getSubscriptionType().getId()));
         entity.setCustomer(referenceMapper.toCustomer(dto.getCustomer().getId()));
         entity = repository.save(entity);
         return mapper.toDto(entity);

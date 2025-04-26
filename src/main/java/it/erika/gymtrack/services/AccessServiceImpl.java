@@ -38,7 +38,8 @@ public class AccessServiceImpl implements AccessService {
             CertificateService certificateService,
             SubscriptionService subscriptionService,
             SuspensionService suspensionService,
-            GymScheduleProperties gymProperties, ReferenceMapper referenceMapper) {
+            GymScheduleProperties gymProperties,
+            ReferenceMapper referenceMapper) {
         this.repository = repository;
         this.mapper = mapper;
         this.certificateService = certificateService;

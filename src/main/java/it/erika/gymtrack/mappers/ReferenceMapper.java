@@ -5,9 +5,8 @@ import it.erika.gymtrack.entities.Subscription;
 import it.erika.gymtrack.entities.SubscriptionType;
 import it.erika.gymtrack.repository.CustomerRepository;
 import it.erika.gymtrack.repository.SubscriptionRepository;
-import java.util.UUID;
-
 import it.erika.gymtrack.repository.SubscriptionTypeRepository;
+import java.util.UUID;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -17,7 +16,10 @@ public class ReferenceMapper {
     private final CustomerRepository customerRepository;
     private final SubscriptionTypeRepository subscriptionTypeRepository;
 
-    public ReferenceMapper(SubscriptionRepository subscriptionRepository, CustomerRepository customerRepository, SubscriptionTypeRepository subscriptionTypeRepository) {
+    public ReferenceMapper(
+            SubscriptionRepository subscriptionRepository,
+            CustomerRepository customerRepository,
+            SubscriptionTypeRepository subscriptionTypeRepository) {
         this.subscriptionRepository = subscriptionRepository;
         this.customerRepository = customerRepository;
         this.subscriptionTypeRepository = subscriptionTypeRepository;

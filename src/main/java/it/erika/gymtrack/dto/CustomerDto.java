@@ -2,10 +2,9 @@ package it.erika.gymtrack.dto;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import java.time.LocalDate;
 import java.util.UUID;
-
-import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
 @Data
@@ -26,6 +25,5 @@ public class CustomerDto {
     @NotBlank
     private String phone;
 
-    @NotNull
-    private LocalDate birthDate;
+    @NotNull private LocalDate birthDate;
 }

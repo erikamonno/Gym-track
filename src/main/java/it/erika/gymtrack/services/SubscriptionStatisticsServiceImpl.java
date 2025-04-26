@@ -10,7 +10,6 @@ import it.erika.gymtrack.repository.AccessRepository;
 import it.erika.gymtrack.repository.CertificateRepository;
 import it.erika.gymtrack.repository.SubscriptionRepository;
 import it.erika.gymtrack.specifications.*;
-import java.time.Duration;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.List;
@@ -29,7 +28,8 @@ public class SubscriptionStatisticsServiceImpl implements SubscriptionStatistics
             SubscriptionRepository subscriptionRepository,
             AccessRepository accessRepository,
             CertificateRepository certificateRepository,
-            CustomerService customerService, GymStatisticsProperties gymStatisticsProperties) {
+            CustomerService customerService,
+            GymStatisticsProperties gymStatisticsProperties) {
         this.subscriptionRepository = subscriptionRepository;
         this.accessRepository = accessRepository;
         this.certificateRepository = certificateRepository;
