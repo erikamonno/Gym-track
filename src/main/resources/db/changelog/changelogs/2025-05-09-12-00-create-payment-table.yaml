@@ -1,0 +1,40 @@
+databaseChangeLog:
+  - changeSet:
+      id: 0
+      author: Erika Monno
+      changes:
+        - createTable:
+            tableName: payment
+            columns:
+              - column:
+                  name: id
+                  type: uuid
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: subscription_id
+                  type: uuid
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_payment_subscription_id
+                    referencedTableName: subscription
+                    referencedColumnNames: id
+              - column:
+                  name: payment_timestamp
+                  type: timestamp with time zone
+              - column:
+                  name: type
+                  type: varchar(100)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: status
+                  type: varchar(100)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: deleted
+                  type: boolean
+                  constraints:
+                    nullable: false
+                    defaultValueBoolean: false
