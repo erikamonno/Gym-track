@@ -3,6 +3,7 @@ package it.erika.gymtrack.entities;
 import jakarta.persistence.*;
 import java.util.UUID;
 import lombok.Data;
+import org.hibernate.annotations.SoftDelete;
 
 @Data
 @Entity

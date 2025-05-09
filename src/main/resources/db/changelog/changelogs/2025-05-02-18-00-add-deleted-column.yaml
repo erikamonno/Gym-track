@@ -1,0 +1,69 @@
+databaseChangeLog:
+  - changeSet:
+      id: 0
+      author: Erika Monno
+      changes:
+        - addColumn:
+            tableName: customer
+            columns:
+              - column:
+                  name: deleted
+                  type: boolean
+                  constraints:
+                    defaultValueBoolean: false
+        - update:
+            tableName: customer
+            columns:
+              - column:
+                  name: deleted
+                  value: false
+            where: deleted is null
+        - addNotNullConstraint:
+            tableName: customer
+            columnName: deleted
+
+  - changeSet:
+      id: 1
+      author: Erika Monno
+      changes:
+        - addColumn:
+            tableName: subscription
+            columns:
+              - column:
+                  name: deleted
+                  type: boolean
+                  constraints:
+                    defaultValueBoolean: false
+        - update:
+            tableName: subscription
+            columns:
+              - column:
+                  name: deleted
+                  value: false
+            where: deleted is null
+        - addNotNullConstraint:
+            tableName: subscription
+            columnName: deleted
+
+  - changeSet:
+      id: 2
+      author: Erika Monno
+      changes:
+        - addColumn:
+            tableName: suspension
+            columns:
+              - column:
+                  name: deleted
+                  type: boolean
+                  constraints:
+                    defaultValueBoolean: false
+        - update:
+            tableName: suspension
+            columns:
+              - column:
+                  name: deleted
+                  value: false
+            where: deleted is null
+        - addNotNullConstraint:
+            tableName: suspension
+            columnName: deleted

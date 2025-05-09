@@ -36,6 +36,7 @@ public class SubscriptionServiceImpl implements SubscriptionService {
     }
 
     @Override
+    @Transactional
     public SubscriptionDto insertSubscription(SubscriptionDto dto) {
         Subscription entity = new Subscription();
         var subscriptionTypeDto = subscriptionTypeService.readOneSubscriptionType(
