@@ -35,6 +35,8 @@ public class SubscriptionTypeServiceImpl implements SubscriptionTypeService {
         entity.setDescription(dto.getDescription());
         entity.setDurationInDays(dto.getDurationInDays());
         entity.setMaxDailyAccesses(dto.getMaxDailyAccesses());
+        entity.setCurrency(dto.getCurrency());
+        entity.setAmount(dto.getAmount());
         entity = repository.save(entity);
         return mapper.toDto(entity);
     }
@@ -68,6 +70,8 @@ public class SubscriptionTypeServiceImpl implements SubscriptionTypeService {
         entity.setDescription(dto.getDescription());
         entity.setDurationInDays(dto.getDurationInDays());
         entity.setMaxDailyAccesses(dto.getMaxDailyAccesses());
+        entity.setCurrency(dto.getCurrency());
+        entity.setAmount(dto.getAmount());
     }
 
     @Override

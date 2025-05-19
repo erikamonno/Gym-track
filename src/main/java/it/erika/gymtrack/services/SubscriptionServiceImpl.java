@@ -65,6 +65,8 @@ public class SubscriptionServiceImpl implements SubscriptionService {
         var payment = new Payment();
         payment.setType(Type.SUBSCRIPTION);
         payment.setStatus(Status.NOT_DONE);
+        payment.setCurrency(entity.getSubscriptionType().getCurrency());
+        payment.setAmount(entity.getSubscriptionType().getAmount());
         entity.addPayment(payment);
     }
 

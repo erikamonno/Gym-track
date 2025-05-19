@@ -18,5 +18,9 @@ public class PaymentDto {
 
     private Status status;
 
+    private String currency;
+
+    private Double amount;
+
     @NotNull private SubscriptionDto subscription;
 }

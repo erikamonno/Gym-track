@@ -36,6 +36,12 @@ public class Payment {
     @Enumerated(value = EnumType.STRING)
     private Status status;
 
+    @Column(name = "currency")
+    private String currency;
+
+    @Column(name = "amount")
+    private Double amount;
+
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @NotFound(action = NotFoundAction.EXCEPTION)
     @JoinColumn(name = "subscription_id")
