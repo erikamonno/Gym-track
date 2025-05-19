@@ -1,7 +1,10 @@
 package it.erika.gymtrack.services;
 
 import it.erika.gymtrack.dto.SubscriptionDto;
+import it.erika.gymtrack.entities.Payment;
 import it.erika.gymtrack.entities.Subscription;
+import it.erika.gymtrack.enumes.Status;
+import it.erika.gymtrack.enumes.Type;
 import it.erika.gymtrack.exceptions.SubscriptionNotFoundException;
 import it.erika.gymtrack.filters.SubscriptionFilter;
 import it.erika.gymtrack.mappers.ReferenceMapper;
@@ -51,8 +54,18 @@ public class SubscriptionServiceImpl implements SubscriptionService {
         entity.setSubscriptionType(
                 referenceMapper.toSubscriptionType(dto.getSubscriptionType().getId()));
         entity.setCustomer(referenceMapper.toCustomer(dto.getCustomer().getId()));
+
+        generatePayment(entity);
+
         entity = repository.save(entity);
         return mapper.toDto(entity);
+    }
+
+    private void generatePayment(Subscription entity) {
+        var payment = new Payment();
+        payment.setType(Type.SUBSCRIPTION);
+        payment.setStatus(Status.NOT_DONE);
+        entity.addPayment(payment);
     }
 
     @Override

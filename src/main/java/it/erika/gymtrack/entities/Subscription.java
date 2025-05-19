@@ -2,16 +2,21 @@ package it.erika.gymtrack.entities;
 
 import jakarta.persistence.*;
 import java.time.Instant;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.UUID;
-import lombok.Data;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.hibernate.annotations.NotFound;
 import org.hibernate.annotations.NotFoundAction;
 import org.hibernate.annotations.SoftDelete;
 
 @Entity
 @Table(name = "subscription")
-@Data
+@Getter
+@Setter
+@NoArgsConstructor
 @SoftDelete
 public class Subscription {
 
@@ -35,6 +40,24 @@ public class Subscription {
     @JoinColumn(name = "customer_id")
     private Customer customer;
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "subscription", cascade = CascadeType.REMOVE) //l'annotation softDeleted non va messa sulle OneToMany
-    private List<Suspension> suspensions;
+    @OneToMany(
+            fetch = FetchType.LAZY,
+            mappedBy = "subscription",
+            cascade = CascadeType.REMOVE) // l'annotation softDeleted non va messa sulle OneToMany
+    private Set<Suspension> suspensions = new HashSet<>();
+
+    @OneToMany(
+            fetch = FetchType.LAZY,
+            mappedBy = "subscription",
+            cascade =
+                    CascadeType
+                            .ALL) // il mappedBy è il nome dell'attributo su cui e definita la relazione nella tabella
+    // payment
+    private Set<Payment> payments = new HashSet<>();
+
+    public Subscription addPayment(Payment payment) {
+        payment.setSubscription(this);
+        getPayments().add(payment);
+        return this;
+    }
 }

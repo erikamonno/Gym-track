@@ -5,6 +5,8 @@ import it.erika.gymtrack.dto.AccessDto;
 import it.erika.gymtrack.dto.SubscriptionDto;
 import it.erika.gymtrack.dto.SubscriptionTypeDto;
 import it.erika.gymtrack.entities.*;
+import it.erika.gymtrack.enumes.Status;
+import it.erika.gymtrack.enumes.Type;
 import it.erika.gymtrack.exceptions.*;
 import it.erika.gymtrack.filters.AccessFilter;
 import it.erika.gymtrack.filters.SubscriptionFilter;
@@ -31,6 +33,7 @@ public class AccessServiceImpl implements AccessService {
     private final SuspensionService suspensionService;
     private final GymScheduleProperties gymProperties;
     private final ReferenceMapper referenceMapper;
+    private final PaymentService paymentService;
 
     public AccessServiceImpl(
             AccessRepository repository,
@@ -39,7 +42,8 @@ public class AccessServiceImpl implements AccessService {
             SubscriptionService subscriptionService,
             SuspensionService suspensionService,
             GymScheduleProperties gymProperties,
-            ReferenceMapper referenceMapper) {
+            ReferenceMapper referenceMapper,
+            PaymentService paymentService) {
         this.repository = repository;
         this.mapper = mapper;
         this.certificateService = certificateService;
@@ -47,20 +51,27 @@ public class AccessServiceImpl implements AccessService {
         this.suspensionService = suspensionService;
         this.gymProperties = gymProperties;
         this.referenceMapper = referenceMapper;
+        this.paymentService = paymentService;
     }
 
     @Override
     public AccessDto insertAccess(AccessDto dto) {
         Access entity = new Access();
         log.info("Insert access {}", dto);
-        entity.setCustomer(referenceMapper.toCustomer(entity.getCustomer().getId()));
+        entity.setCustomer(referenceMapper.toCustomer(dto.getCustomer().getId()));
         var subscriptionDto = searchSubscription(dto.getCustomer().getId());
 
         checkGymOpen();
+
         checkValidSubscription(subscriptionDto);
+
+        checkPayment(subscriptionDto.getId());
+
         suspensionService.checkActiveSuspensionAtInstant(
                 subscriptionDto.getId(), Instant.now()); // controllo nella data corrente
+
         checkValidCertificate(dto.getCustomer().getId());
+
         checkIfMaxDailyAccessWasExceeded(dto.getCustomer().getId(), subscriptionDto.getSubscriptionType());
 
         entity = repository.save(entity);
@@ -84,6 +95,25 @@ public class AccessServiceImpl implements AccessService {
         if (!isValidSubscription) {
             throw new SubscriptionNotValidException("Subscription not valid");
         }
+    }
+
+    private void checkPayment(UUID subscriptionId) {
+        var payments = paymentService.getPayments(subscriptionId);
+        /* PaymentDto subscriptionPaymentDone = null;
+         for(PaymentDto paymentDto : payments) {
+            if(paymentDto.getStatus().equals(Status.DONE) && paymentDto.getType().equals(Type.SUBSCRIPTION)) {
+                subscriptionPaymentDone = paymentDto;
+            }
+        }
+        if(subscriptionPaymentDone==null) {
+            throw new PaymentNotDoneException("Subscription Payment not done");
+        } */
+
+        payments.stream()
+                .filter(dto ->
+                        dto.getStatus().equals(Status.DONE) && dto.getType().equals(Type.SUBSCRIPTION))
+                .findAny()
+                .orElseThrow(() -> new PaymentNotDoneException("Subscription Payment not done"));
     }
 
     private void checkValidCertificate(UUID certificateId) {
