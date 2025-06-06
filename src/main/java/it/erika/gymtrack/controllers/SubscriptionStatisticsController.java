@@ -2,11 +2,14 @@ package it.erika.gymtrack.controllers;
 
 import it.erika.gymtrack.dto.AccessNumberDto;
 import it.erika.gymtrack.dto.ExpiringCertificateDto;
+import it.erika.gymtrack.dto.InvoiceStatisticsDto;
 import it.erika.gymtrack.dto.SubscriptionStatisticsDto;
+import it.erika.gymtrack.filters.InvoiceStatisticsFilter;
 import it.erika.gymtrack.filters.SubscriptionStatisticsFilter;
 import it.erika.gymtrack.services.SubscriptionStatisticsService;
 import java.util.List;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -33,5 +36,10 @@ public class SubscriptionStatisticsController {
     @GetMapping(path = "medicalCertificate/expiring")
     private List<ExpiringCertificateDto> getMedicalCertificateExpiring() {
         return service.getMedicalCertificateExpiring();
+    }
+
+    @GetMapping(path = "invoice")
+    private InvoiceStatisticsDto getStatisticsInvoices(InvoiceStatisticsFilter filter) {
+        return service.getStatisticsInvoices(filter);
     }
 }

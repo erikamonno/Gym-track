@@ -4,9 +4,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
-public class SubscriptionTypeNotFound extends StatusException {
+public class PaymentNotFoundException extends StatusException {
 
-    public SubscriptionTypeNotFound(HttpStatusCode httpStatusCode, String message) {
+    public PaymentNotFoundException(HttpStatusCode httpStatusCode, String message) {
         super(httpStatusCode, message);
     }
 }

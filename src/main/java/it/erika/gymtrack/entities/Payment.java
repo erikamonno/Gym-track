@@ -43,7 +43,6 @@ public class Payment {
     private Double amount;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @NotFound(action = NotFoundAction.EXCEPTION)
     @JoinColumn(name = "subscription_id")
     private Subscription subscription;
 }

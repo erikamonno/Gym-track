@@ -27,7 +27,7 @@ public class CustomerSpecification implements Specification<Customer> {
             if (filter.getName() == null) {
                 return null;
             } else {
-                return criteriaBuilder.equal(root.get("name"), filter.getName());
+                return criteriaBuilder.equal(root.get(Customer_.name), filter.getName());
             }
         };
     }
@@ -37,7 +37,7 @@ public class CustomerSpecification implements Specification<Customer> {
             if (filter.getSurname() == null) {
                 return null;
             } else {
-                return criteriaBuilder.equal(root.get("surname"), filter.getSurname());
+                return criteriaBuilder.equal(root.get(Customer_.surname), filter.getSurname());
             }
         };
     }
@@ -47,7 +47,7 @@ public class CustomerSpecification implements Specification<Customer> {
             if (filter.getEmail() == null) {
                 return null;
             } else {
-                return criteriaBuilder.equal(root.get("email"), filter.getEmail());
+                return criteriaBuilder.equal(root.get(Customer_.email), filter.getEmail());
             }
         };
     }
@@ -57,7 +57,7 @@ public class CustomerSpecification implements Specification<Customer> {
             if (filter.getPhone() == null) {
                 return null;
             } else {
-                return criteriaBuilder.equal(root.get("phone"), filter.getPhone());
+                return criteriaBuilder.equal(root.get(Customer_.phone), filter.getPhone());
             }
         };
     }

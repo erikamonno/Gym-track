@@ -1,11 +1,12 @@
 package it.erika.gymtrack.exceptions;
 
 import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
-@ResponseStatus(HttpStatus.BAD_REQUEST)
-public class PaymentAlreadyDoneException extends RuntimeException {
-    public PaymentAlreadyDoneException(String message) {
-        super(message);
+public class PaymentAlreadyDoneException extends StatusException {
+
+    public PaymentAlreadyDoneException(HttpStatusCode httpStatusCode, String message) {
+        super(httpStatusCode, message);
     }
 }

@@ -1,7 +1,10 @@
 package it.erika.gymtrack.exceptions;
 
-public class PaymentNotDoneException extends RuntimeException {
-    public PaymentNotDoneException(String message) {
-        super(message);
+import org.springframework.http.HttpStatusCode;
+
+public class PaymentNotDoneException extends StatusException {
+
+    public PaymentNotDoneException(HttpStatusCode httpStatusCode, String message) {
+        super(httpStatusCode, message);
     }
 }

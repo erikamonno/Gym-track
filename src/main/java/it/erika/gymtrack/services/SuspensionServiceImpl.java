@@ -18,6 +18,7 @@ import java.util.Optional;
 import java.util.UUID;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -69,7 +70,7 @@ public class SuspensionServiceImpl implements SuspensionService {
     public void checkActiveSuspensionAtInstant(UUID subscriptionId, Instant atDate) {
         List<Suspension> suspensionList = repository.findAll(new ActiveSuspensionSpecification(subscriptionId, atDate));
         if (!suspensionList.isEmpty()) {
-            throw new SuspensionAlreadyExistInThatDateException("Exisiting suspension");
+            throw new SuspensionAlreadyExistInThatDateException(HttpStatus.BAD_REQUEST, "Exisiting suspension");
         }
     }
 
@@ -77,7 +78,7 @@ public class SuspensionServiceImpl implements SuspensionService {
     public SuspensionDto getSuspension(UUID id) {
         Optional<Suspension> oEntity = repository.findById(id);
         if (oEntity.isEmpty()) {
-            throw new SuspensionNotFoundException("Suspension not found");
+            throw new SuspensionNotFoundException(HttpStatus.NOT_FOUND, "Suspension not found");
         }
         var entity = oEntity.get();
         return mapper.toDto(entity);
@@ -95,7 +96,7 @@ public class SuspensionServiceImpl implements SuspensionService {
     public void updateSuspension(SuspensionDto dto, UUID id) {
         Optional<Suspension> oEntity = repository.findById(id);
         if (oEntity.isEmpty()) {
-            throw new SuspensionNotFoundException("Suspension not found");
+            throw new SuspensionNotFoundException(HttpStatus.NOT_FOUND, "Suspension not found");
         }
         var entity = oEntity.get();
         entity.setStartDate(dto.getStartDate());

@@ -9,6 +9,8 @@ import java.io.IOException;
 import java.time.Instant;
 import java.util.Optional;
 import java.util.UUID;
+
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -37,7 +39,7 @@ public class CertificateServiceImpl implements CertificateService {
     public CertificateDto getById(UUID id) {
         Optional<Certificate> oEntity = repository.findById(id);
         if (oEntity.isEmpty()) {
-            throw new CertificateNotFoundException("Certificate not found");
+            throw new CertificateNotFoundException(HttpStatus.NOT_FOUND, "Certificate not found");
         }
         var entity = oEntity.get();
         return mapper.toDto(entity);
@@ -47,7 +49,7 @@ public class CertificateServiceImpl implements CertificateService {
     public boolean existValidCertificate(UUID id) {
         Optional<Certificate> oEntity = repository.findById(id);
         if (oEntity.isEmpty()) {
-            throw new CertificateNotFoundException("Certificate not found");
+            throw new CertificateNotFoundException(HttpStatus.NOT_FOUND, "Certificate not found");
         }
         var entity = oEntity.get();
         return entity.getExpiryDate().isAfter(Instant.now());

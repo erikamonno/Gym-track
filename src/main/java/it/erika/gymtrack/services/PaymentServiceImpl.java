@@ -2,7 +2,7 @@ package it.erika.gymtrack.services;
 
 import it.erika.gymtrack.dto.PaymentDto;
 import it.erika.gymtrack.enumes.Status;
-import it.erika.gymtrack.exceptions.EntityNotFoundException;
+import it.erika.gymtrack.exceptions.PaymentNotFoundException;
 import it.erika.gymtrack.exceptions.PaymentAlreadyDoneException;
 import it.erika.gymtrack.mappers.PaymentMapper;
 import it.erika.gymtrack.repository.PaymentRepository;
@@ -11,6 +11,7 @@ import java.time.Instant;
 import java.util.List;
 import java.util.UUID;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -41,13 +42,13 @@ public class PaymentServiceImpl implements PaymentService {
     public void pay(UUID id) {
         var oEntity = paymentRepository.findById(id);
         if (oEntity.isEmpty()) {
-            throw new EntityNotFoundException("Entity not found");
+            throw new PaymentNotFoundException(HttpStatus.NOT_FOUND, "Entity not found");
         } else {
             var payment = oEntity.get();
             log.info("Payment found with id: {}", payment.getId());
 
             if (payment.getStatus().equals(Status.DONE)) {
-                throw new PaymentAlreadyDoneException("Payment already done with that id");
+                throw new PaymentAlreadyDoneException(HttpStatus.BAD_REQUEST, "Payment already done with that id");
             }
             payment.setStatus(Status.DONE);
             payment.setPaymentTimestamp(Instant.now());

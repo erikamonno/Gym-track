@@ -13,6 +13,7 @@ import java.util.UUID;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 @Log4j2
@@ -31,7 +32,6 @@ public class CustomerServiceImpl implements CustomerService {
     public CustomerDto insertCustomer(CustomerDto dto) {
         Customer entity = new Customer();
         log.info("Insert customer {}", dto);
-        entity.setId(dto.getId());
         entity.setName(dto.getName());
         entity.setSurname(dto.getSurname());
         entity.setEmail(dto.getEmail());
@@ -45,7 +45,7 @@ public class CustomerServiceImpl implements CustomerService {
     public CustomerDto getCustomer(UUID id) {
         Optional<Customer> oEntity = repository.findById(id);
         if (oEntity.isEmpty()) {
-            throw new CustomerNotFoundException("Customer not found");
+            throw new CustomerNotFoundException(HttpStatus.NOT_FOUND, "Customer not found");
         }
         var entity = oEntity.get();
         return mapper.toDto(entity);
@@ -61,7 +61,7 @@ public class CustomerServiceImpl implements CustomerService {
     public void updateCustomer(UUID id, CustomerDto dto) {
         Optional<Customer> oEntity = repository.findById(id);
         if (oEntity.isEmpty()) {
-            throw new CustomerNotFoundException("Customer not found");
+            throw new CustomerNotFoundException(HttpStatus.NOT_FOUND, "Customer not found");
         }
         var entity = oEntity.get();
         entity.setName(dto.getName());
