@@ -5,6 +5,8 @@ import it.erika.gymtrack.dto.AccessDto;
 import it.erika.gymtrack.dto.SubscriptionDto;
 import it.erika.gymtrack.dto.SubscriptionTypeDto;
 import it.erika.gymtrack.entities.*;
+import it.erika.gymtrack.enumes.Status;
+import it.erika.gymtrack.enumes.Type;
 import it.erika.gymtrack.exceptions.*;
 import it.erika.gymtrack.filters.AccessFilter;
 import it.erika.gymtrack.filters.SubscriptionFilter;
@@ -18,6 +20,7 @@ import java.util.UUID;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 @Log4j2
@@ -31,6 +34,7 @@ public class AccessServiceImpl implements AccessService {
     private final SuspensionService suspensionService;
     private final GymScheduleProperties gymProperties;
     private final ReferenceMapper referenceMapper;
+    private final PaymentService paymentService;
 
     public AccessServiceImpl(
             AccessRepository repository,
@@ -39,7 +43,8 @@ public class AccessServiceImpl implements AccessService {
             SubscriptionService subscriptionService,
             SuspensionService suspensionService,
             GymScheduleProperties gymProperties,
-            ReferenceMapper referenceMapper) {
+            ReferenceMapper referenceMapper,
+            PaymentService paymentService) {
         this.repository = repository;
         this.mapper = mapper;
         this.certificateService = certificateService;
@@ -47,20 +52,27 @@ public class AccessServiceImpl implements AccessService {
         this.suspensionService = suspensionService;
         this.gymProperties = gymProperties;
         this.referenceMapper = referenceMapper;
+        this.paymentService = paymentService;
     }
 
     @Override
     public AccessDto insertAccess(AccessDto dto) {
         Access entity = new Access();
         log.info("Insert access {}", dto);
-        entity.setCustomer(referenceMapper.toCustomer(entity.getCustomer().getId()));
+        entity.setCustomer(referenceMapper.toCustomer(dto.getCustomer().getId()));
         var subscriptionDto = searchSubscription(dto.getCustomer().getId());
 
         checkGymOpen();
+
         checkValidSubscription(subscriptionDto);
+
+        checkPayment(subscriptionDto.getId());
+
         suspensionService.checkActiveSuspensionAtInstant(
                 subscriptionDto.getId(), Instant.now()); // controllo nella data corrente
+
         checkValidCertificate(dto.getCustomer().getId());
+
         checkIfMaxDailyAccessWasExceeded(dto.getCustomer().getId(), subscriptionDto.getSubscriptionType());
 
         entity = repository.save(entity);
@@ -72,7 +84,7 @@ public class AccessServiceImpl implements AccessService {
         subscriptionFilter.setCustomerId(customerId);
         var page = subscriptionService.searchSubscription(Pageable.ofSize(1), subscriptionFilter);
         if (page.isEmpty()) {
-            throw new SubscriptionNotFoundException("Subscription not found");
+            throw new SubscriptionNotFoundException(HttpStatus.BAD_REQUEST, "Subscription not found");
         }
         return page.stream().findFirst().get();
     }
@@ -82,13 +94,33 @@ public class AccessServiceImpl implements AccessService {
         var isValidSubscription = today.isAfter(subscriptionDto.getStartDate())
                 || today.equals(subscriptionDto.getStartDate()) && today.isBefore(subscriptionDto.getEndDate());
         if (!isValidSubscription) {
-            throw new SubscriptionNotValidException("Subscription not valid");
+            throw new SubscriptionNotValidException(HttpStatus.BAD_REQUEST, "Subscription not valid");
         }
+    }
+
+    private void checkPayment(UUID subscriptionId) {
+        var payments = paymentService.getPayments(subscriptionId);
+        /* PaymentDto subscriptionPaymentDone = null;
+         for(PaymentDto paymentDto : payments) {
+            if(paymentDto.getStatus().equals(Status.DONE) && paymentDto.getType().equals(Type.SUBSCRIPTION)) {
+                subscriptionPaymentDone = paymentDto;
+            }
+        }
+        if(subscriptionPaymentDone==null) {
+            throw new PaymentNotDoneException("Subscription Payment not done");
+        } */
+
+        payments.stream()
+                .filter(dto ->
+                        dto.getStatus().equals(Status.DONE) && dto.getType().equals(Type.SUBSCRIPTION))
+                .findAny()
+                .orElseThrow(
+                        () -> new PaymentNotDoneException(HttpStatus.BAD_REQUEST, "Subscription Payment not done"));
     }
 
     private void checkValidCertificate(UUID certificateId) {
         if (!certificateService.existValidCertificate(certificateId)) {
-            throw new CertificateNotValidException("Certificate not valid");
+            throw new CertificateNotValidException(HttpStatus.BAD_REQUEST, "Certificate not valid");
         }
     }
 
@@ -100,7 +132,7 @@ public class AccessServiceImpl implements AccessService {
         var nowIsBeforeOrIsEqualCloseTime = now.isBefore(closeTime) || now.equals(closeTime);
         var isGymOpen = nowIsAfterOrEqualOpenTime && nowIsBeforeOrIsEqualCloseTime;
         if (!isGymOpen) {
-            throw new GymClosedException("Gym closed, the access is impossible");
+            throw new GymClosedException(HttpStatus.BAD_REQUEST, "Gym closed, the access is impossible");
         }
     }
 
@@ -120,7 +152,8 @@ public class AccessServiceImpl implements AccessService {
             var customerDailyAccessList = searchAccess(Pageable.ofSize(1), filter);
 
             if (customerDailyAccessList.getTotalElements() >= subscriptionTypeDto.getMaxDailyAccesses()) {
-                throw new MaxDailyAccessExceededException("Access not permitted, max daily access was exceeded");
+                throw new MaxDailyAccessExceededException(
+                        HttpStatus.BAD_REQUEST, "Access not permitted, max daily access was exceeded");
             }
         }
     }
@@ -129,7 +162,7 @@ public class AccessServiceImpl implements AccessService {
     public AccessDto getAccess(UUID id) {
         Optional<Access> oEntity = repository.findById(id);
         if (oEntity.isEmpty()) {
-            throw new AccessNotFoundException("Access not found");
+            throw new AccessNotFoundException(HttpStatus.NOT_FOUND, "Access not found");
         }
         var entity = oEntity.get();
         return mapper.toDto(entity);

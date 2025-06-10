@@ -1,11 +1,10 @@
 package it.erika.gymtrack.exceptions;
 
-import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.http.HttpStatusCode;
 
-@ResponseStatus(HttpStatus.NOT_FOUND)
-public class CustomerNotFoundException extends RuntimeException {
-    public CustomerNotFoundException(String message) {
-        super(message);
+public class CustomerNotFoundException extends StatusException {
+
+    public CustomerNotFoundException(HttpStatusCode httpStatusCode, String message) {
+        super(httpStatusCode, message);
     }
 }

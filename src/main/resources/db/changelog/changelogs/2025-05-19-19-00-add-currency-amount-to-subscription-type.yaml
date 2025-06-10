@@ -1,0 +1,41 @@
+databaseChangeLog:
+  - changeSet:
+      id: 0
+      author: Erika Monno
+      changes:
+        - addColumn:
+            tableName: subscription_type
+            columns:
+              - column:
+                  name: currency
+                  type: varchar(3)
+        - update:
+            tableName: subscription_type
+            columns:
+              - column:
+                  name: currency
+                  value: EUR
+            where: currency is null
+        - addNotNullConstraint:
+            tableName: subscription_type
+            columnName: currency
+  - changeSet:
+      id: 1
+      author: Erika Monno
+      changes:
+        - addColumn:
+            tableName: subscription_type
+            columns:
+              - column:
+                  name: amount
+                  type: decimal(10,2)
+        - update:
+            tableName: subscription_type
+            columns:
+              - column:
+                  name: amount
+                  value: 0
+            where: amount is null
+        - addNotNullConstraint:
+            tableName: subscription_type
+            columnName: amount

@@ -1,11 +1,10 @@
 package it.erika.gymtrack.exceptions;
 
-import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.http.HttpStatusCode;
 
-@ResponseStatus(HttpStatus.BAD_REQUEST)
-public class GymClosedException extends RuntimeException {
-    public GymClosedException(String message) {
-        super(message);
+public class GymClosedException extends StatusException {
+
+    public GymClosedException(HttpStatusCode httpStatusCode, String message) {
+        super(httpStatusCode, message);
     }
 }

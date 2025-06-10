@@ -1,0 +1,41 @@
+databaseChangeLog:
+  - changeSet:
+      id: 0
+      author: Erika Monno
+      changes:
+        - createTable:
+            tableName: promotion
+            columns:
+              - column:
+                  name: id
+                  type: uuid
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: name
+                  type: varchar(50)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: amount
+                  type: double
+                  constraints:
+                    nullable: false
+              - column:
+                  name: valid_from
+                  type: timestamp with time zone
+                  constraints:
+                    nullable: false
+              - column:
+                  name: valid_to
+                  type: timestamp with time zone
+                  constraints:
+                    nullable: false
+              - column:
+                  name: subscription_type_id
+                  type: uuid
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_promotion_subscription_type_id
+                    referencedTableName: subscription_type
+                    referencedColumnNames: id

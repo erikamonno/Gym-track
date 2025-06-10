@@ -3,19 +3,25 @@ package it.erika.gymtrack.services;
 import it.erika.gymtrack.configurations.GymStatisticsProperties;
 import it.erika.gymtrack.dto.AccessNumberDto;
 import it.erika.gymtrack.dto.ExpiringCertificateDto;
+import it.erika.gymtrack.dto.InvoiceStatisticsDto;
 import it.erika.gymtrack.dto.SubscriptionStatisticsDto;
 import it.erika.gymtrack.entities.Certificate;
+import it.erika.gymtrack.entities.Payment;
+import it.erika.gymtrack.filters.InvoiceStatisticsFilter;
 import it.erika.gymtrack.filters.SubscriptionStatisticsFilter;
 import it.erika.gymtrack.repository.AccessRepository;
 import it.erika.gymtrack.repository.CertificateRepository;
+import it.erika.gymtrack.repository.PaymentRepository;
 import it.erika.gymtrack.repository.SubscriptionRepository;
 import it.erika.gymtrack.specifications.*;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.List;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;
 
 @Service
+@Log4j2
 public class SubscriptionStatisticsServiceImpl implements SubscriptionStatisticsService {
 
     private final SubscriptionRepository subscriptionRepository;
@@ -23,18 +29,21 @@ public class SubscriptionStatisticsServiceImpl implements SubscriptionStatistics
     private final CertificateRepository certificateRepository;
     private final CustomerService customerService;
     private final GymStatisticsProperties gymStatisticsProperties;
+    private final PaymentRepository paymentRepository;
 
     public SubscriptionStatisticsServiceImpl(
             SubscriptionRepository subscriptionRepository,
             AccessRepository accessRepository,
             CertificateRepository certificateRepository,
             CustomerService customerService,
-            GymStatisticsProperties gymStatisticsProperties) {
+            GymStatisticsProperties gymStatisticsProperties,
+            PaymentRepository paymentRepository) {
         this.subscriptionRepository = subscriptionRepository;
         this.accessRepository = accessRepository;
         this.certificateRepository = certificateRepository;
         this.customerService = customerService;
         this.gymStatisticsProperties = gymStatisticsProperties;
+        this.paymentRepository = paymentRepository;
     }
 
     @Override
@@ -65,6 +74,21 @@ public class SubscriptionStatisticsServiceImpl implements SubscriptionStatistics
         return certificateRepository.findAll(new ExpiringCertificateSpecification(duration)).stream()
                 .map(certificate -> toDto(certificate))
                 .toList();
+    }
+
+    @Override
+    public InvoiceStatisticsDto getStatisticsInvoices(InvoiceStatisticsFilter filter) {
+        log.info("Getting invoices with filter {}", filter);
+        InvoiceStatisticsDto dto = new InvoiceStatisticsDto();
+        var payments = paymentRepository.findAll(new InvoiceStatisticsSpecification(filter));
+        var amount = 0d;
+        for (Payment payment : payments) {
+            amount += payment.getAmount();
+        }
+        var paymentsDone = payments.size();
+        dto.setTotalInvoices((long) paymentsDone);
+        dto.setTotalAmount(amount);
+        return dto;
     }
 
     private ExpiringCertificateDto toDto(Certificate certificate) {

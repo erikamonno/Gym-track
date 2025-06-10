@@ -35,7 +35,7 @@ public class Suspension {
 
     @ManyToOne(
             fetch = FetchType.LAZY,
-            optional = false)// quando salvo una suspension ci deve essere per forza una subscription
+            optional = false) // quando salvo una suspension ci deve essere per forza una subscription
     @NotFound(action = NotFoundAction.EXCEPTION)
     @JoinColumn(name = "subscription_id")
     private Subscription subscription;

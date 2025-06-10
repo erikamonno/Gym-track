@@ -13,6 +13,7 @@ import java.util.UUID;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -35,6 +36,8 @@ public class SubscriptionTypeServiceImpl implements SubscriptionTypeService {
         entity.setDescription(dto.getDescription());
         entity.setDurationInDays(dto.getDurationInDays());
         entity.setMaxDailyAccesses(dto.getMaxDailyAccesses());
+        entity.setCurrency(dto.getCurrency());
+        entity.setAmount(dto.getAmount());
         entity = repository.save(entity);
         return mapper.toDto(entity);
     }
@@ -43,7 +46,7 @@ public class SubscriptionTypeServiceImpl implements SubscriptionTypeService {
     public SubscriptionTypeDto readOneSubscriptionType(UUID id) {
         Optional<SubscriptionType> oEntity = repository.findById(id);
         if (oEntity.isEmpty()) {
-            throw new SubscriptionTypeNotFound("SubscriptionType not found");
+            throw new SubscriptionTypeNotFound(HttpStatus.NOT_FOUND, "SubscriptionType not found");
         }
         var entity = oEntity.get();
         return mapper.toDto(entity);
@@ -61,13 +64,15 @@ public class SubscriptionTypeServiceImpl implements SubscriptionTypeService {
     public void updateSubscriptionType(SubscriptionTypeDto dto, UUID id) {
         Optional<SubscriptionType> oEntity = repository.findById(id);
         if (oEntity.isEmpty()) {
-            throw new SubscriptionTypeNotFound("SubscriptionType not found");
+            throw new SubscriptionTypeNotFound(HttpStatus.NOT_FOUND, "SubscriptionType not found");
         }
         var entity = oEntity.get();
         entity.setName(dto.getName());
         entity.setDescription(dto.getDescription());
         entity.setDurationInDays(dto.getDurationInDays());
         entity.setMaxDailyAccesses(dto.getMaxDailyAccesses());
+        entity.setCurrency(dto.getCurrency());
+        entity.setAmount(dto.getAmount());
     }
 
     @Override
