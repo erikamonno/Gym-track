@@ -1,8 +1,7 @@
 package it.erika.gymtrack.filters;
 
-import lombok.Data;
-
 import java.time.Instant;
+import lombok.Data;
 
 @Data
 public class InvoiceStatisticsFilter {
@@ -10,5 +9,4 @@ public class InvoiceStatisticsFilter {
     private Instant dateFrom;
 
     private Instant dateTo;
-
 }

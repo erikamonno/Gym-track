@@ -12,5 +12,4 @@ public abstract class StatusException extends RuntimeException {
         super(message);
         this.httpStatusCode = httpStatusCode;
     }
-
 }

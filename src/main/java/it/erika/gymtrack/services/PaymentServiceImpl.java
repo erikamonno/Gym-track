@@ -2,8 +2,8 @@ package it.erika.gymtrack.services;
 
 import it.erika.gymtrack.dto.PaymentDto;
 import it.erika.gymtrack.enumes.Status;
-import it.erika.gymtrack.exceptions.PaymentNotFoundException;
 import it.erika.gymtrack.exceptions.PaymentAlreadyDoneException;
+import it.erika.gymtrack.exceptions.PaymentNotFoundException;
 import it.erika.gymtrack.mappers.PaymentMapper;
 import it.erika.gymtrack.repository.PaymentRepository;
 import jakarta.transaction.Transactional;

@@ -1,17 +1,14 @@
 package it.erika.gymtrack.entities;
 
 import jakarta.persistence.*;
-
 import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
 import lombok.Data;
-import org.hibernate.annotations.SoftDelete;
 
 @Data
 @Entity
 @Table(name = "subscription_type")
-
 public class SubscriptionType {
 
     @Id

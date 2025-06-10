@@ -40,6 +40,10 @@ public class Subscription {
     @JoinColumn(name = "customer_id")
     private Customer customer;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "promotion_id")
+    private Promotion promotion;
+
     @OneToMany(
             fetch = FetchType.LAZY,
             mappedBy = "subscription",

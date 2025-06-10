@@ -7,10 +7,9 @@ import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
 import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
-import org.springframework.data.jpa.domain.Specification;
-
 import java.time.Instant;
 import java.util.UUID;
+import org.springframework.data.jpa.domain.Specification;
 
 public class OverlappingPromotionSpecification implements Specification<Promotion> {
 
@@ -32,15 +31,15 @@ public class OverlappingPromotionSpecification implements Specification<Promotio
     @Override
     public Predicate toPredicate(Root<Promotion> root, CriteriaQuery<?> query, CriteriaBuilder criteriaBuilder) {
         return Specification.allOf(
-                subscriptionTypeIdEqual(),
-                validFromLessThenOrEqualTo().and(validToGreaterThenOrEqualTo()),
-                promotionIdEqual()
-        ).toPredicate(root, query, criteriaBuilder);
+                        subscriptionTypeIdEqual(),
+                        validFromLessThenOrEqualTo().and(validToGreaterThenOrEqualTo()),
+                        promotionIdEqual())
+                .toPredicate(root, query, criteriaBuilder);
     }
 
     private Specification<Promotion> subscriptionTypeIdEqual() {
-        return (root, query, criteriaBuilder) ->
-                criteriaBuilder.equal(root.get(Promotion_.subscriptionType).get(SubscriptionType_.id), subscriptionTypeId);
+        return (root, query, criteriaBuilder) -> criteriaBuilder.equal(
+                root.get(Promotion_.subscriptionType).get(SubscriptionType_.id), subscriptionTypeId);
     }
 
     private Specification<Promotion> validToGreaterThenOrEqualTo() {
@@ -53,13 +52,13 @@ public class OverlappingPromotionSpecification implements Specification<Promotio
                 criteriaBuilder.lessThanOrEqualTo(root.get(Promotion_.validFrom), validTo);
     }
 
-    //La clausola viene attivata solo nel caso dell'update perchè vado a controllare che il controllo delle date
+    // La clausola viene attivata solo nel caso dell'update perchè vado a controllare che il controllo delle date
     // non si verifichi sulla stessa data che sto aggiornando. Nel caso dell'insert in
     // cui non abbiamo un id da passare, questo risulterà null e avverrà il controllo
     // delle date rispetto a quelle delle promozioni eventualmente già presenti
     private Specification<Promotion> promotionIdEqual() {
         return (root, query, criteriaBuilder) -> {
-            if(id==null) {
+            if (id == null) {
                 return null;
             } else {
                 return criteriaBuilder.notEqual(root.get(Promotion_.id), id);

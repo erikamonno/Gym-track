@@ -17,4 +17,6 @@ public class SubscriptionDto {
     @NotNull private SubscriptionTypeDto subscriptionType;
 
     @NotNull private CustomerDto customer;
+
+    private PromotionDto promotion;
 }

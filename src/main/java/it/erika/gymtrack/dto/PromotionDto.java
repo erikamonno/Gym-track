@@ -1,10 +1,9 @@
 package it.erika.gymtrack.dto;
 
 import jakarta.validation.constraints.*;
-import lombok.Data;
-
 import java.time.Instant;
 import java.util.UUID;
+import lombok.Data;
 
 @Data
 public class PromotionDto {
@@ -14,17 +13,12 @@ public class PromotionDto {
     @NotBlank
     private String name;
 
-    @NotNull
-    @PositiveOrZero
+    @NotNull @PositiveOrZero
     private Double amount;
 
-    @NotNull
-    @FutureOrPresent
+    @NotNull @FutureOrPresent
     private Instant validFrom;
 
-    @NotNull
-    @Future
+    @NotNull @Future
     private Instant validTo;
-
 }
-

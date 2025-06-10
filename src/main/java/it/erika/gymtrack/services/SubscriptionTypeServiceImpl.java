@@ -64,7 +64,7 @@ public class SubscriptionTypeServiceImpl implements SubscriptionTypeService {
     public void updateSubscriptionType(SubscriptionTypeDto dto, UUID id) {
         Optional<SubscriptionType> oEntity = repository.findById(id);
         if (oEntity.isEmpty()) {
-            throw new SubscriptionTypeNotFound(HttpStatus.NOT_FOUND,"SubscriptionType not found");
+            throw new SubscriptionTypeNotFound(HttpStatus.NOT_FOUND, "SubscriptionType not found");
         }
         var entity = oEntity.get();
         entity.setName(dto.getName());

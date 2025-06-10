@@ -21,7 +21,6 @@ import lombok.extern.log4j.Log4j2;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.HttpStatusCode;
 import org.springframework.stereotype.Service;
 
 @Log4j2
@@ -115,7 +114,8 @@ public class AccessServiceImpl implements AccessService {
                 .filter(dto ->
                         dto.getStatus().equals(Status.DONE) && dto.getType().equals(Type.SUBSCRIPTION))
                 .findAny()
-                .orElseThrow(() -> new PaymentNotDoneException(HttpStatus.BAD_REQUEST, "Subscription Payment not done"));
+                .orElseThrow(
+                        () -> new PaymentNotDoneException(HttpStatus.BAD_REQUEST, "Subscription Payment not done"));
     }
 
     private void checkValidCertificate(UUID certificateId) {
@@ -152,7 +152,8 @@ public class AccessServiceImpl implements AccessService {
             var customerDailyAccessList = searchAccess(Pageable.ofSize(1), filter);
 
             if (customerDailyAccessList.getTotalElements() >= subscriptionTypeDto.getMaxDailyAccesses()) {
-                throw new MaxDailyAccessExceededException(HttpStatus.BAD_REQUEST, "Access not permitted, max daily access was exceeded");
+                throw new MaxDailyAccessExceededException(
+                        HttpStatus.BAD_REQUEST, "Access not permitted, max daily access was exceeded");
             }
         }
     }

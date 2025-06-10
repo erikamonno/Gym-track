@@ -4,8 +4,7 @@ import org.springframework.http.HttpStatusCode;
 
 public class PromotionDateNotValidException extends StatusException {
 
-  public PromotionDateNotValidException(HttpStatusCode httpStatusCode, String message) {
-    super(httpStatusCode, message);
-  }
+    public PromotionDateNotValidException(HttpStatusCode httpStatusCode, String message) {
+        super(httpStatusCode, message);
+    }
 }
-

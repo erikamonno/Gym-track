@@ -3,7 +3,6 @@ package it.erika.gymtrack.services;
 import it.erika.gymtrack.dto.SubscriptionDto;
 import it.erika.gymtrack.entities.Payment;
 import it.erika.gymtrack.entities.Subscription;
-import it.erika.gymtrack.entities.SubscriptionType;
 import it.erika.gymtrack.enumes.Status;
 import it.erika.gymtrack.enumes.Type;
 import it.erika.gymtrack.exceptions.SubscriptionNotFoundException;
@@ -16,7 +15,6 @@ import jakarta.transaction.Transactional;
 import java.time.temporal.ChronoUnit;
 import java.util.Optional;
 import java.util.UUID;
-
 import lombok.extern.log4j.Log4j2;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -37,7 +35,8 @@ public class SubscriptionServiceImpl implements SubscriptionService {
             SubscriptionMapper mapper,
             SubscriptionRepository repository,
             SubscriptionTypeService subscriptionTypeService,
-            ReferenceMapper referenceMapper, PromotionService promotionService) {
+            ReferenceMapper referenceMapper,
+            PromotionService promotionService) {
         this.mapper = mapper;
         this.repository = repository;
         this.subscriptionTypeService = subscriptionTypeService;
@@ -71,27 +70,27 @@ public class SubscriptionServiceImpl implements SubscriptionService {
 
     private void generatePayment(Subscription entity) {
         var payment = new Payment();
+        Double amount;
+        var promotion = promotionService.getActivePromotionBySubscriptionTypeId(
+                entity.getSubscriptionType().getId());
         payment.setType(Type.SUBSCRIPTION);
         payment.setStatus(Status.NOT_DONE);
         payment.setCurrency(entity.getSubscriptionType().getCurrency());
 
-        var amount = computeAmount(entity.getSubscriptionType());
-
-        payment.setAmount(amount);
-        entity.addPayment(payment);
-    }
-
-    private Double computeAmount(SubscriptionType subscriptionType) {
-        Double amount;
-        var promotion = promotionService.getActivePromotionBySubscriptionTypeId(subscriptionType.getId());
-        if(promotion.isEmpty()) {
-            amount = subscriptionType.getAmount();
+        if (promotion.isEmpty()) {
+            amount = entity.getSubscriptionType().getAmount();
             log.info("Promotion doesn't exist, amount uses subscriptionType amount with value {}", amount);
         } else {
             amount = promotion.get().getAmount();
-            log.info("Promotion exists, amount uses promotion amount with id {} and value {}", promotion.get().getId(), amount);
+            log.info(
+                    "Promotion exists, amount uses promotion amount with id {} and value {}",
+                    promotion.get().getId(),
+                    amount);
+            entity.setPromotion(referenceMapper.toPromotion(promotion.get().getId()));
         }
-        return amount;
+        payment.setAmount(amount);
+
+        entity.addPayment(payment);
     }
 
     @Override

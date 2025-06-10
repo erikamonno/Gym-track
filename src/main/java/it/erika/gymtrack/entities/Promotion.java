@@ -1,20 +1,17 @@
 package it.erika.gymtrack.entities;
 
 import jakarta.persistence.*;
+import java.time.Instant;
+import java.util.UUID;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.hibernate.annotations.SoftDelete;
-
-import java.time.Instant;
-import java.util.UUID;
 
 @Entity
 @Getter
 @Setter
 @NoArgsConstructor
 @Table(name = "promotion")
-
 public class Promotion {
 
     @Id
@@ -37,6 +34,4 @@ public class Promotion {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "subscription_type_id")
     private SubscriptionType subscriptionType;
-
-
 }

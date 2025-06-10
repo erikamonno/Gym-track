@@ -8,4 +8,3 @@ public class PromotionOverlappingException extends StatusException {
         super(httpStatusCode, message);
     }
 }
-

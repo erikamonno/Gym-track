@@ -1,0 +1,15 @@
+databaseChangeLog:
+  - changeSet:
+      id: 0
+      author: Erika Monno
+      changes:
+        - addColumn:
+            tableName: subscription
+            columns:
+              - column:
+                  name: promotion_id
+                  type: uuid
+                  constraints:
+                    foreignKeyName: fk_subscription_promotion_id
+                    referencedTableName: promotion
+                    referencedColumnNames: id
