@@ -13,7 +13,7 @@ public interface PromotionService {
 
     PromotionDto getPromotion(UUID id);
 
-    Optional<PromotionDto> getActivePromotionBySubscriptionTypeId(UUID subscriptionTypeId);
+    Optional<PromotionDto> getActivePromotionBySubscriptionTypeId(UUID subscriptionTypeId, Boolean onlyNewCustomers);
 
     void updatePromotion(UUID subscriptionTypeId, UUID id, PromotionDto dto);
 

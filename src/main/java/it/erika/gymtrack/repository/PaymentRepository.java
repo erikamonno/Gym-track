@@ -11,7 +11,4 @@ public interface PaymentRepository extends JpaRepository<Payment, UUID>, JpaSpec
 
     List<Payment> findBySubscription_Id(UUID subscriptionId);
 
-    Integer countByStatus(Status status);
-
-    List<Payment> findByStatus(Status status);
 }

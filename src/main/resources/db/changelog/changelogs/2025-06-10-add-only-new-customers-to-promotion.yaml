@@ -1,0 +1,23 @@
+databaseChangeLog:
+  - changeSet:
+      id: 0
+      author: Erika Monno
+      changes:
+        - addColumn:
+            tableName: promotion
+            columns:
+              - column:
+                  name: only_new_customers
+                  type: boolean
+                  constraints:
+                    defaultValueBoolean: false
+        - update:
+            tableName: promotion
+            columns:
+              - column:
+                  name: only_new_customers
+                  value: false
+            where: only_new_customers is null
+        - addNotNullConstraint:
+            tableName: promotion
+            columnName: only_new_customers

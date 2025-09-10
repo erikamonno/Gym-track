@@ -1,18 +1,19 @@
 package it.erika.gymtrack.entities;
 
 import jakarta.persistence.*;
-import java.time.Instant;
-import java.util.UUID;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.time.Instant;
+import java.util.UUID;
+
 @Entity
+@Table(name = "course")
 @Getter
 @Setter
 @NoArgsConstructor
-@Table(name = "promotion")
-public class Promotion {
+public class Course {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
@@ -22,19 +23,9 @@ public class Promotion {
     @Column(name = "name")
     private String name;
 
-    @Column(name = "amount")
-    private Double amount;
-
     @Column(name = "validFrom")
     private Instant validFrom;
 
     @Column(name = "validTo")
     private Instant validTo;
-
-    @Column(name = "onlyNewCustomers")
-    private Boolean onlyNewCustomers;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "subscription_type_id")
-    private SubscriptionType subscriptionType;
 }

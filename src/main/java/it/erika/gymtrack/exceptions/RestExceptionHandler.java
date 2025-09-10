@@ -10,7 +10,7 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 public class RestExceptionHandler extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler(exception = StatusException.class)
-    public ResponseEntity<ProblemDetail> hendleStatusException(StatusException e) {
+    public ResponseEntity<ProblemDetail> handleStatusException(StatusException e) {
         var problem = ProblemDetail.forStatusAndDetail(e.getHttpStatusCode(), e.getMessage());
         return ResponseEntity.status(e.getHttpStatusCode()).body(problem);
     }

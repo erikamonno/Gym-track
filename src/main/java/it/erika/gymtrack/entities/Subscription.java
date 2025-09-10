@@ -64,4 +64,5 @@ public class Subscription {
         getPayments().add(payment);
         return this;
     }
+
 }

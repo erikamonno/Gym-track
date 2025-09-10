@@ -71,8 +71,9 @@ public class SubscriptionServiceImpl implements SubscriptionService {
     private void generatePayment(Subscription entity) {
         var payment = new Payment();
         Double amount;
+        var onlyNewCustomer = isNewCustomer(entity.getCustomer().getId());
         var promotion = promotionService.getActivePromotionBySubscriptionTypeId(
-                entity.getSubscriptionType().getId());
+                entity.getSubscriptionType().getId(), onlyNewCustomer);
         payment.setType(Type.SUBSCRIPTION);
         payment.setStatus(Status.NOT_DONE);
         payment.setCurrency(entity.getSubscriptionType().getCurrency());
@@ -91,6 +92,12 @@ public class SubscriptionServiceImpl implements SubscriptionService {
         payment.setAmount(amount);
 
         entity.addPayment(payment);
+    }
+
+    private boolean isNewCustomer(UUID customerId) {
+        var filter = new SubscriptionFilter();
+        filter.setCustomerId(customerId);
+        return repository.exists(new SubscriptionSpecification(filter));
     }
 
     @Override

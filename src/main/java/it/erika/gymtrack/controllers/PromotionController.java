@@ -45,8 +45,10 @@ public class PromotionController {
     }
 
     @GetMapping("activePromotion")
-    public PromotionDto getActive(@PathVariable(name = "subscriptionTypeId") UUID subscriptionTypeId) {
-        return service.getActivePromotionBySubscriptionTypeId(subscriptionTypeId)
+    public PromotionDto getActive(
+            @PathVariable(name = "subscriptionTypeId") UUID subscriptionTypeId,
+            @RequestParam(name = "onlyNewCustomers", defaultValue = "false") Boolean onlyNewCustomers) {
+        return service.getActivePromotionBySubscriptionTypeId(subscriptionTypeId, onlyNewCustomers)
                         .orElseThrow(() -> new PromotionNotFoundException(HttpStatus.NOT_FOUND, "Promotion not found"));
     }
 
