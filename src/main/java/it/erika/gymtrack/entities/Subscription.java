@@ -65,4 +65,12 @@ public class Subscription {
         return this;
     }
 
+    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, mappedBy = "subscription", orphanRemoval = true)
+    private Set<SubscriptionCourse> subscriptionCourses;
+
+    public Subscription addSubscriptionCourse(SubscriptionCourse subscriptionCourse) {
+        subscriptionCourse.setSubscription(this);
+        getSubscriptionCourses().add(subscriptionCourse);
+        return this;
+    }
 }

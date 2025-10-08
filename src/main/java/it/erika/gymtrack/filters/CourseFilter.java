@@ -1,6 +1,5 @@
 package it.erika.gymtrack.filters;
 
-
 import lombok.Data;
 
 @Data

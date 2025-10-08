@@ -9,15 +9,14 @@ import it.erika.gymtrack.mappers.ReferenceMapper;
 import it.erika.gymtrack.repository.CourseScheduleRepository;
 import it.erika.gymtrack.specifications.CourseScheduleSpecification;
 import jakarta.transaction.Transactional;
+import java.util.Optional;
+import java.util.UUID;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.RestController;
 
-import java.util.Optional;
-import java.util.UUID;
 @Log4j2
 @Service
 public class CourseScheduleServiceImpl implements CourseScheduleService {
@@ -26,7 +25,8 @@ public class CourseScheduleServiceImpl implements CourseScheduleService {
     private final CourseScheduleMapper mapper;
     private final ReferenceMapper referenceMapper;
 
-    public CourseScheduleServiceImpl(CourseScheduleRepository repository, CourseScheduleMapper mapper, ReferenceMapper referenceMapper) {
+    public CourseScheduleServiceImpl(
+            CourseScheduleRepository repository, CourseScheduleMapper mapper, ReferenceMapper referenceMapper) {
         this.repository = repository;
         this.mapper = mapper;
         this.referenceMapper = referenceMapper;
@@ -41,14 +41,16 @@ public class CourseScheduleServiceImpl implements CourseScheduleService {
         entity.setEndTime(dto.getEndTime());
         entity.setCourse(referenceMapper.toCourse(dto.getCourse().getId()));
         entity = repository.save(entity);
-        log.info("Inserted a course schedule with id {} successfully", dto.getCourse().getId());
+        log.info(
+                "Inserted a course schedule with id {} successfully",
+                dto.getCourse().getId());
         return mapper.toDto(entity);
     }
 
     @Override
     public CourseScheduleDto getCourseSchedule(UUID id) {
         Optional<CourseSchedule> oEntity = repository.findById(id);
-        if(oEntity.isEmpty()) {
+        if (oEntity.isEmpty()) {
             throw new CourseScheduleNotFoundException(HttpStatus.NOT_FOUND, "Course schedule not found");
         }
         var entity = oEntity.get();
@@ -57,21 +59,22 @@ public class CourseScheduleServiceImpl implements CourseScheduleService {
 
     @Override
     public Page<CourseScheduleDto> searchCourseSchedule(Pageable pageable, CourseScheduleFilter filter) {
-        return repository.findAll(new CourseScheduleSpecification(filter), pageable).map(courseSchedule -> mapper.toDto(courseSchedule));
+        return repository
+                .findAll(new CourseScheduleSpecification(filter), pageable)
+                .map(courseSchedule -> mapper.toDto(courseSchedule));
     }
 
     @Override
     @Transactional
     public void updateCourseSchedule(UUID id, CourseScheduleDto dto) {
         Optional<CourseSchedule> oEntity = repository.findById(id);
-        if(oEntity.isEmpty()) {
+        if (oEntity.isEmpty()) {
             throw new CourseScheduleNotFoundException(HttpStatus.NOT_FOUND, "Course schedule not found");
         }
         var entity = oEntity.get();
         entity.setDay(dto.getDay());
         entity.setStartTime(dto.getStartTime());
         entity.setEndTime(dto.getEndTime());
-
     }
 
     @Override

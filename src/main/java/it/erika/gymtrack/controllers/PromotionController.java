@@ -7,7 +7,6 @@ import it.erika.gymtrack.services.SubscriptionTypeService;
 import jakarta.validation.Valid;
 import java.util.List;
 import java.util.UUID;
-
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
@@ -49,7 +48,7 @@ public class PromotionController {
             @PathVariable(name = "subscriptionTypeId") UUID subscriptionTypeId,
             @RequestParam(name = "onlyNewCustomers", defaultValue = "false") Boolean onlyNewCustomers) {
         return service.getActivePromotionBySubscriptionTypeId(subscriptionTypeId, onlyNewCustomers)
-                        .orElseThrow(() -> new PromotionNotFoundException(HttpStatus.NOT_FOUND, "Promotion not found"));
+                .orElseThrow(() -> new PromotionNotFoundException(HttpStatus.NOT_FOUND, "Promotion not found"));
     }
 
     @PutMapping("promotions/{id}")

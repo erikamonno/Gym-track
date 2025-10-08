@@ -1,6 +1,5 @@
 package it.erika.gymtrack.specifications;
 
-import it.erika.gymtrack.entities.Course;
 import it.erika.gymtrack.entities.CourseSchedule;
 import it.erika.gymtrack.entities.CourseSchedule_;
 import it.erika.gymtrack.entities.Course_;
@@ -21,17 +20,14 @@ public class CourseScheduleSpecification implements Specification<CourseSchedule
 
     @Override
     public Predicate toPredicate(Root<CourseSchedule> root, CriteriaQuery<?> query, CriteriaBuilder criteriaBuilder) {
-        return Specification.allOf(
-                dayEqual(),
-                courseIdEqual()
-        ).toPredicate(root, query, criteriaBuilder);
+        return Specification.allOf(dayEqual(), courseIdEqual()).toPredicate(root, query, criteriaBuilder);
     }
 
     public Specification<CourseSchedule> dayEqual() {
         return (root, query, criteriaBuilder) -> {
-            if(filter.getDay()==null) {
+            if (filter.getDay() == null) {
                 return null;
-            }else{
+            } else {
                 return criteriaBuilder.equal(root.get(CourseSchedule_.day), filter.getDay());
             }
         };
@@ -39,9 +35,9 @@ public class CourseScheduleSpecification implements Specification<CourseSchedule
 
     public Specification<CourseSchedule> courseIdEqual() {
         return (root, query, criteriaBuilder) -> {
-            if(filter.getCourseId()==null) {
+            if (filter.getCourseId() == null) {
                 return null;
-            }else{
+            } else {
                 return criteriaBuilder.equal(root.get(CourseSchedule_.course).get(Course_.id), filter.getCourseId());
             }
         };

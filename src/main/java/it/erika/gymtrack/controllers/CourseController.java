@@ -4,15 +4,14 @@ import it.erika.gymtrack.dto.CourseDto;
 import it.erika.gymtrack.filters.CourseFilter;
 import it.erika.gymtrack.services.CourseService;
 import jakarta.validation.Valid;
+import java.util.UUID;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.UUID;
-
 @RestController
-@RequestMapping("courses") //plurale perchè l'url si riferisce a più risorse dello stesso tipo ossia più corsi
+@RequestMapping("courses") // plurale perchè l'url si riferisce a più risorse dello stesso tipo ossia più corsi
 public class CourseController {
 
     private final CourseService service;
@@ -22,7 +21,7 @@ public class CourseController {
     }
 
     @PostMapping
-    public CourseDto insertCourse(@Valid @RequestBody CourseDto dto){
+    public CourseDto insertCourse(@Valid @RequestBody CourseDto dto) {
         return service.insertCourse(dto);
     }
 

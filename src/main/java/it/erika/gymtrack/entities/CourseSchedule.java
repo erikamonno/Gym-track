@@ -1,23 +1,20 @@
 package it.erika.gymtrack.entities;
 
-import it.erika.gymtrack.dto.CourseDto;
 import jakarta.persistence.*;
+import java.time.DayOfWeek;
+import java.time.LocalTime;
+import java.util.UUID;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.NotFound;
 import org.hibernate.annotations.NotFoundAction;
 
-import java.time.DayOfWeek;
-import java.time.LocalTime;
-import java.util.UUID;
-
 @Entity
 @Table(name = "course_schedule")
 @Getter
 @Setter
 @NoArgsConstructor
-
 public class CourseSchedule {
 
     @Id
@@ -39,6 +36,4 @@ public class CourseSchedule {
     @NotFound(action = NotFoundAction.EXCEPTION)
     @JoinColumn(name = "course_id")
     private Course course;
-
-
 }

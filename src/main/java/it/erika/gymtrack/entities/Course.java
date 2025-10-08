@@ -1,12 +1,12 @@
 package it.erika.gymtrack.entities;
 
 import jakarta.persistence.*;
+import java.time.Instant;
+import java.util.Set;
+import java.util.UUID;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-
-import java.time.Instant;
-import java.util.UUID;
 
 @Entity
 @Table(name = "course")
@@ -28,4 +28,7 @@ public class Course {
 
     @Column(name = "validTo")
     private Instant validTo;
+
+    @OneToMany(mappedBy = "course")
+    private Set<SubscriptionCourse> subscriptionCourses;
 }

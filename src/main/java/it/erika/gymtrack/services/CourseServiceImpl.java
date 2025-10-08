@@ -5,21 +5,16 @@ import it.erika.gymtrack.entities.Course;
 import it.erika.gymtrack.exceptions.CourseNotFoundException;
 import it.erika.gymtrack.filters.CourseFilter;
 import it.erika.gymtrack.mappers.CourseMapper;
-import it.erika.gymtrack.mappers.ReferenceMapper;
 import it.erika.gymtrack.repository.CourseRepository;
 import it.erika.gymtrack.specifications.CourseSpecification;
 import jakarta.transaction.Transactional;
+import java.util.Optional;
+import java.util.UUID;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.HttpStatusCode;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.HttpStatusCodeException;
-
-import java.util.Optional;
-import java.util.UUID;
 
 @Log4j2
 @Service
@@ -47,7 +42,7 @@ public class CourseServiceImpl implements CourseService {
     @Override
     public CourseDto getCourse(UUID id) {
         Optional<Course> oEntity = repository.findById(id);
-        if(oEntity.isEmpty()) {
+        if (oEntity.isEmpty()) {
             throw new CourseNotFoundException(HttpStatus.NOT_FOUND, "Course not found");
         }
         Course entity = oEntity.get();
@@ -63,7 +58,7 @@ public class CourseServiceImpl implements CourseService {
     @Transactional
     public void updateCourse(UUID id, CourseDto dto) {
         Optional<Course> oEntity = repository.findById(id);
-        if(oEntity.isEmpty()) {
+        if (oEntity.isEmpty()) {
             throw new CourseNotFoundException(HttpStatus.NOT_FOUND, "Course not found");
         }
         var entity = oEntity.get();

@@ -24,9 +24,7 @@ public class ActivePromotionSpecification implements Specification<Promotion> {
 
     @Override
     public Predicate toPredicate(Root<Promotion> root, CriteriaQuery<?> query, CriteriaBuilder criteriaBuilder) {
-        return Specification.allOf(subscriptionTypeIdEqual(),
-                        validRangeDateBetween(),
-                        onlyNewCustomers())
+        return Specification.allOf(subscriptionTypeIdEqual(), validRangeDateBetween(), onlyNewCustomers())
                 .toPredicate(root, query, criteriaBuilder);
     }
 

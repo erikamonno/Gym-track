@@ -4,8 +4,7 @@ import org.springframework.http.HttpStatusCode;
 
 public class CourseScheduleNotFoundException extends StatusException {
 
-  public CourseScheduleNotFoundException(HttpStatusCode httpStatusCode, String message) {
-    super(httpStatusCode, message);
-  }
+    public CourseScheduleNotFoundException(HttpStatusCode httpStatusCode, String message) {
+        super(httpStatusCode, message);
+    }
 }
-

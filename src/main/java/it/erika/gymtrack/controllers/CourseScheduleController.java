@@ -4,15 +4,16 @@ import it.erika.gymtrack.dto.CourseScheduleDto;
 import it.erika.gymtrack.filters.CourseScheduleFilter;
 import it.erika.gymtrack.services.CourseScheduleService;
 import jakarta.validation.Valid;
+import java.util.UUID;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.UUID;
-
 @RestController
-@RequestMapping("courseSchedules")  //plurale perchè l'url si riferisce a più risorse dello stesso tipo ossia più orari dei corsi
+@RequestMapping(
+        "courseSchedules") // plurale perchè l'url si riferisce a più risorse dello stesso tipo ossia più orari dei
+// corsi
 public class CourseScheduleController {
 
     private final CourseScheduleService service;
@@ -32,7 +33,8 @@ public class CourseScheduleController {
     }
 
     @GetMapping
-    public Page<CourseScheduleDto> searchCourseSchedule(@PageableDefault Pageable pageable, CourseScheduleFilter filter) {
+    public Page<CourseScheduleDto> searchCourseSchedule(
+            @PageableDefault Pageable pageable, CourseScheduleFilter filter) {
         return service.searchCourseSchedule(pageable, filter);
     }
 

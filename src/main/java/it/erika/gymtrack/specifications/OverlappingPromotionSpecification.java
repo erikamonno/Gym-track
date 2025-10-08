@@ -23,7 +23,8 @@ public class OverlappingPromotionSpecification implements Specification<Promotio
 
     private final Boolean onlyNewCustomers;
 
-    public OverlappingPromotionSpecification(UUID id, UUID subscriptionTypeId, Instant validTo, Instant validFrom, Boolean onlyNewCustomers) {
+    public OverlappingPromotionSpecification(
+            UUID id, UUID subscriptionTypeId, Instant validTo, Instant validFrom, Boolean onlyNewCustomers) {
         this.id = id;
         this.subscriptionTypeId = subscriptionTypeId;
         this.validTo = validTo;
@@ -74,5 +75,4 @@ public class OverlappingPromotionSpecification implements Specification<Promotio
         return (root, query, criteriaBuilder) ->
                 criteriaBuilder.equal(root.get(Promotion_.onlyNewCustomers), onlyNewCustomers);
     }
-
 }

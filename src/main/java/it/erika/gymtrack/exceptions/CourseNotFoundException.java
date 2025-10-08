@@ -8,4 +8,3 @@ public class CourseNotFoundException extends StatusException {
         super(httpStatusCode, message);
     }
 }
-

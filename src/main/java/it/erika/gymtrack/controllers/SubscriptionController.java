@@ -1,9 +1,12 @@
 package it.erika.gymtrack.controllers;
 
+import it.erika.gymtrack.dto.CourseDto;
 import it.erika.gymtrack.dto.SubscriptionDto;
 import it.erika.gymtrack.filters.SubscriptionFilter;
 import it.erika.gymtrack.services.SubscriptionService;
 import jakarta.validation.Valid;
+
+import java.util.List;
 import java.util.UUID;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -43,5 +46,15 @@ public class SubscriptionController {
     @DeleteMapping("{id}")
     public void deleteSubscription(@PathVariable(name = "id") UUID id) {
         service.deleteSubscription(id);
+    }
+
+    @PutMapping("{id}/courses")
+    public void replaceCourses(@PathVariable(name = "id") UUID id, @Valid @RequestBody List<UUID> courseList) {
+        service.replaceCourses(id, courseList);
+    }
+
+    @GetMapping("{id}/courses")
+    public List<CourseDto> getCourses(@PathVariable(name = "id") UUID id) {
+        return service.getCourses(id);
     }
 }

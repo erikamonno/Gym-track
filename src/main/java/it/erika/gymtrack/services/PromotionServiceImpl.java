@@ -59,8 +59,8 @@ public class PromotionServiceImpl implements PromotionService {
     }
 
     private void checkRangeDate(PromotionDto dto, UUID subscriptionTypeId, UUID id) {
-        var existsOverlappingPromotions = repository.exists(
-                new OverlappingPromotionSpecification(id, subscriptionTypeId, dto.getValidTo(), dto.getValidFrom(), dto.getOnlyNewCustomers()));
+        var existsOverlappingPromotions = repository.exists(new OverlappingPromotionSpecification(
+                id, subscriptionTypeId, dto.getValidTo(), dto.getValidFrom(), dto.getOnlyNewCustomers()));
         if (existsOverlappingPromotions) {
             throw new PromotionOverlappingException(HttpStatus.CONFLICT, "Promotion overlapping in those dates");
         }
@@ -85,8 +85,10 @@ public class PromotionServiceImpl implements PromotionService {
     }
 
     @Override
-    public Optional<PromotionDto> getActivePromotionBySubscriptionTypeId(UUID subscriptionTypeId, Boolean onlyNewCustomers) {
-        var activePromotion = repository.findOne(new ActivePromotionSpecification(subscriptionTypeId, onlyNewCustomers));
+    public Optional<PromotionDto> getActivePromotionBySubscriptionTypeId(
+            UUID subscriptionTypeId, Boolean onlyNewCustomers) {
+        var activePromotion =
+                repository.findOne(new ActivePromotionSpecification(subscriptionTypeId, onlyNewCustomers));
         return activePromotion.map(promotion -> mapper.toDto(promotion));
     }
 

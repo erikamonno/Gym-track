@@ -2,7 +2,6 @@ package it.erika.gymtrack.mappers;
 
 import it.erika.gymtrack.entities.*;
 import it.erika.gymtrack.repository.*;
-
 import java.util.UUID;
 import org.springframework.stereotype.Component;
 
@@ -19,7 +18,8 @@ public class ReferenceMapper {
             SubscriptionRepository subscriptionRepository,
             CustomerRepository customerRepository,
             SubscriptionTypeRepository subscriptionTypeRepository,
-            PromotionRepository promotionRepository, CourseRepository courseRepository) {
+            PromotionRepository promotionRepository,
+            CourseRepository courseRepository) {
         this.subscriptionRepository = subscriptionRepository;
         this.customerRepository = customerRepository;
         this.subscriptionTypeRepository = subscriptionTypeRepository;
@@ -46,5 +46,4 @@ public class ReferenceMapper {
     public Course toCourse(UUID id) {
         return courseRepository.getReferenceById(id);
     }
-
 }

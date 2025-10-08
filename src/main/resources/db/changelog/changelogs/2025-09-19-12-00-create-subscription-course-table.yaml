@@ -1,0 +1,28 @@
+databaseChangeLog:
+  - changeSet:
+      id: 0
+      author: Erika Monno
+      changes:
+        - createTable:
+            tableName: subscription_course
+            columns:
+              - column:
+                  name: subscription_id
+                  type: uuid
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_subscription_course_subscription_id
+                    referencedTableName: subscription
+                    referencedColumnNames: id
+              - column:
+                  name: course_id
+                  type: uuid
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_subscription_course_course_id
+                    referencedTableName: course
+                    referencedColumnNames: id
+        - addPrimaryKey:
+            columnNames: course_id, subscription_id
+            constraintName: pk_subscription_course
+            tableName: subscription_course
