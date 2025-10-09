@@ -11,7 +11,7 @@ import org.springframework.data.web.PageableDefault;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("subscriptionType")
+@RequestMapping("subscriptionTypes")
 public class SubscriptionTypeController {
 
     private final SubscriptionTypeService service;

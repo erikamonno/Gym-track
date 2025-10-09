@@ -27,7 +27,7 @@ public class AccessSpecification implements Specification<Access> {
             if (filter.getAccessDateFrom() == null) {
                 return null;
             } else {
-                return criteriaBuilder.greaterThanOrEqualTo(root.get("accessDate"), filter.getAccessDateFrom());
+                return criteriaBuilder.greaterThanOrEqualTo(root.get(Access_.accessDate), filter.getAccessDateFrom());
             }
         };
     }
@@ -37,7 +37,7 @@ public class AccessSpecification implements Specification<Access> {
             if (filter.getAccessDateTo() == null) {
                 return null;
             } else {
-                return criteriaBuilder.lessThanOrEqualTo(root.get("accessDate"), filter.getAccessDateTo());
+                return criteriaBuilder.lessThanOrEqualTo(root.get(Access_.accessDate), filter.getAccessDateTo());
             }
         };
     }

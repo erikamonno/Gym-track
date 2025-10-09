@@ -8,5 +8,6 @@ public class Main {
         Instant endDate = LocalDateTime.of(2025, 1, 10, 18, 0).toInstant(ZoneOffset.UTC);
         System.out.println(Duration.between(startDate, endDate));
         System.out.println(Instant.now());
+        System.out.println(LocalTime.now());
     }
 }

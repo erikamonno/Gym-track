@@ -1,7 +1,10 @@
 package it.erika.gymtrack.services;
 
+import it.erika.gymtrack.dto.CourseDto;
 import it.erika.gymtrack.dto.SubscriptionDto;
 import it.erika.gymtrack.filters.SubscriptionFilter;
+
+import java.util.List;
 import java.util.UUID;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -17,4 +20,8 @@ public interface SubscriptionService {
     void updateSubscription(UUID id, SubscriptionDto dto);
 
     void deleteSubscription(UUID id);
+
+    void replaceCourses(UUID id, List<UUID> courseList);
+
+    List<CourseDto> getCourses(UUID id);
 }

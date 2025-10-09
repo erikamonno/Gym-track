@@ -13,19 +13,23 @@ import org.springframework.data.jpa.domain.Specification;
 
 public class OverlappingPromotionSpecification implements Specification<Promotion> {
 
-    private UUID id;
+    private final UUID id;
 
-    private UUID subscriptionTypeId;
+    private final UUID subscriptionTypeId;
 
-    private Instant validTo;
+    private final Instant validTo;
 
-    private Instant validFrom;
+    private final Instant validFrom;
 
-    public OverlappingPromotionSpecification(UUID id, UUID subscriptionTypeId, Instant validTo, Instant validFrom) {
+    private final Boolean onlyNewCustomers;
+
+    public OverlappingPromotionSpecification(
+            UUID id, UUID subscriptionTypeId, Instant validTo, Instant validFrom, Boolean onlyNewCustomers) {
         this.id = id;
         this.subscriptionTypeId = subscriptionTypeId;
         this.validTo = validTo;
         this.validFrom = validFrom;
+        this.onlyNewCustomers = onlyNewCustomers;
     }
 
     @Override
@@ -33,7 +37,8 @@ public class OverlappingPromotionSpecification implements Specification<Promotio
         return Specification.allOf(
                         subscriptionTypeIdEqual(),
                         validFromLessThenOrEqualTo().and(validToGreaterThenOrEqualTo()),
-                        promotionIdEqual())
+                        promotionIdEqual(),
+                        onlyNewCustomers())
                 .toPredicate(root, query, criteriaBuilder);
     }
 
@@ -64,5 +69,10 @@ public class OverlappingPromotionSpecification implements Specification<Promotio
                 return criteriaBuilder.notEqual(root.get(Promotion_.id), id);
             }
         };
+    }
+
+    private Specification<Promotion> onlyNewCustomers() {
+        return (root, query, criteriaBuilder) ->
+                criteriaBuilder.equal(root.get(Promotion_.onlyNewCustomers), onlyNewCustomers);
     }
 }

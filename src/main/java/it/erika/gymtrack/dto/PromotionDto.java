@@ -21,4 +21,6 @@ public class PromotionDto {
 
     @NotNull @Future
     private Instant validTo;
+
+    @NotNull private Boolean onlyNewCustomers;
 }

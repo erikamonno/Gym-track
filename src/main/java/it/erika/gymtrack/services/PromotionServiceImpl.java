@@ -46,6 +46,7 @@ public class PromotionServiceImpl implements PromotionService {
 
         entity.setValidTo(dto.getValidTo());
         entity.setValidFrom(dto.getValidFrom());
+        entity.setOnlyNewCustomers(dto.getOnlyNewCustomers());
         entity.setSubscriptionType(referenceMapper.toSubscriptionType(subscriptionTypeId));
         entity = repository.save(entity);
         return mapper.toDto(entity);
@@ -58,8 +59,8 @@ public class PromotionServiceImpl implements PromotionService {
     }
 
     private void checkRangeDate(PromotionDto dto, UUID subscriptionTypeId, UUID id) {
-        var existsOverlappingPromotions = repository.exists(
-                new OverlappingPromotionSpecification(id, subscriptionTypeId, dto.getValidTo(), dto.getValidFrom()));
+        var existsOverlappingPromotions = repository.exists(new OverlappingPromotionSpecification(
+                id, subscriptionTypeId, dto.getValidTo(), dto.getValidFrom(), dto.getOnlyNewCustomers()));
         if (existsOverlappingPromotions) {
             throw new PromotionOverlappingException(HttpStatus.CONFLICT, "Promotion overlapping in those dates");
         }
@@ -84,8 +85,10 @@ public class PromotionServiceImpl implements PromotionService {
     }
 
     @Override
-    public Optional<PromotionDto> getActivePromotionBySubscriptionTypeId(UUID subscriptionTypeId) {
-        var activePromotion = repository.findOne(new ActivePromotionSpecification(subscriptionTypeId));
+    public Optional<PromotionDto> getActivePromotionBySubscriptionTypeId(
+            UUID subscriptionTypeId, Boolean onlyNewCustomers) {
+        var activePromotion =
+                repository.findOne(new ActivePromotionSpecification(subscriptionTypeId, onlyNewCustomers));
         return activePromotion.map(promotion -> mapper.toDto(promotion));
     }
 
@@ -106,6 +109,7 @@ public class PromotionServiceImpl implements PromotionService {
 
         entity.setValidTo(dto.getValidTo());
         entity.setValidFrom(dto.getValidFrom());
+        entity.setOnlyNewCustomers(dto.getOnlyNewCustomers());
         entity.setSubscriptionType(referenceMapper.toSubscriptionType(subscriptionTypeId));
     }
 
