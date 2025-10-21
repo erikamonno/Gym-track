@@ -1,22 +1,21 @@
 package it.erika.gymtrack.services;
 
 import it.erika.gymtrack.configurations.GymScheduleProperties;
-import it.erika.gymtrack.dto.AccessDto;
-import it.erika.gymtrack.dto.SubscriptionDto;
-import it.erika.gymtrack.dto.SubscriptionTypeDto;
+import it.erika.gymtrack.dto.*;
 import it.erika.gymtrack.entities.*;
 import it.erika.gymtrack.enumes.Status;
 import it.erika.gymtrack.enumes.Type;
 import it.erika.gymtrack.exceptions.*;
 import it.erika.gymtrack.filters.AccessFilter;
+import it.erika.gymtrack.filters.CourseScheduleFilter;
 import it.erika.gymtrack.filters.SubscriptionFilter;
 import it.erika.gymtrack.mappers.AccessMapper;
 import it.erika.gymtrack.mappers.ReferenceMapper;
 import it.erika.gymtrack.repository.AccessRepository;
 import it.erika.gymtrack.specifications.AccessSpecification;
 import java.time.*;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
+
 import lombok.extern.log4j.Log4j2;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -35,6 +34,7 @@ public class AccessServiceImpl implements AccessService {
     private final GymScheduleProperties gymProperties;
     private final ReferenceMapper referenceMapper;
     private final PaymentService paymentService;
+    private final CourseScheduleService courseScheduleService;
 
     public AccessServiceImpl(
             AccessRepository repository,
@@ -44,7 +44,7 @@ public class AccessServiceImpl implements AccessService {
             SuspensionService suspensionService,
             GymScheduleProperties gymProperties,
             ReferenceMapper referenceMapper,
-            PaymentService paymentService) {
+            PaymentService paymentService, CourseScheduleService courseScheduleService) {
         this.repository = repository;
         this.mapper = mapper;
         this.certificateService = certificateService;
@@ -53,6 +53,7 @@ public class AccessServiceImpl implements AccessService {
         this.gymProperties = gymProperties;
         this.referenceMapper = referenceMapper;
         this.paymentService = paymentService;
+        this.courseScheduleService = courseScheduleService;
     }
 
     @Override
@@ -74,6 +75,8 @@ public class AccessServiceImpl implements AccessService {
         checkValidCertificate(dto.getCustomer().getId());
 
         checkIfMaxDailyAccessWasExceeded(dto.getCustomer().getId(), subscriptionDto.getSubscriptionType());
+
+        checkCourseAssociated(subscriptionDto.getId(), dto.getCourse().getId());
 
         entity = repository.save(entity);
         return mapper.toDto(entity);
@@ -156,6 +159,47 @@ public class AccessServiceImpl implements AccessService {
                         HttpStatus.BAD_REQUEST, "Access not permitted, max daily access was exceeded");
             }
         }
+    }
+
+    private void checkCourseAssociated(UUID subscriptionId, UUID courseId) {
+        log.info("Finding courses associated to subscriptionId {}", subscriptionId);
+        boolean courseAssociatedFound = false;
+        List<CourseDto> courses = subscriptionService.getCourses(subscriptionId);
+        log.info("Checking if course with id {} is associated to subscription {}", courseId, subscriptionId);
+        for(var courseDto : courses) {
+            if(courseDto.getId().equals(courseId)) {
+                courseAssociatedFound = true;
+                log.info("Found course associated to subscription {}", subscriptionId);
+            }
+        }
+        if(!courseAssociatedFound) {
+            log.info("course {} is not associated to subscription {}", courseId, subscriptionId);
+            throw new CourseNotFoundException(HttpStatus.BAD_REQUEST, "Course inserted not valid");
+        }
+    }
+
+    private void checkCourseSchedule(UUID courseId) {
+        log.info("Checking courseSchedule of course {}", courseId);
+        var today = DayOfWeek.from(LocalDate.now());
+        var now = LocalTime.now();
+        boolean courseScheduleFound = false;
+        var filter = new CourseScheduleFilter();
+        filter.setCourseId(courseId);
+        filter.setDay(today);
+        var courseSchedules = courseScheduleService.searchCourseSchedule(Pageable.unpaged(), filter);
+        log.info("Checking list to find a courseScheduleDto");
+        for(CourseScheduleDto courseScheduleDto : courseSchedules) {
+            var nowIsAfterOrEqualStartTime = now.equals(courseScheduleDto.getStartTime()) || now.isAfter(courseScheduleDto.getStartTime());
+            var nowIsBeforeEndTime = now.isBefore(courseScheduleDto.getEndTime());
+            if(nowIsAfterOrEqualStartTime || nowIsBeforeEndTime) {
+                courseScheduleFound = true;
+                log.info("Course {} is starting", courseScheduleDto.getCourse().getId());
+            }
+        }
+        if(!courseScheduleFound) {
+            throw new CourseScheduleNotFoundException(HttpStatus.BAD_REQUEST, "Course %s not started or already finished".formatted(courseId));
+        }
+
     }
 
     @Override
