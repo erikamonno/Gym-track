@@ -13,4 +13,6 @@ public class AccessDto {
     private Instant accessDate;
 
     @NotNull private CustomerDto customer;
+
+    private CourseDto course;
 }
