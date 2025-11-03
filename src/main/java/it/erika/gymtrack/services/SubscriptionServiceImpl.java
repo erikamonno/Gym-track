@@ -160,7 +160,10 @@ public class SubscriptionServiceImpl implements SubscriptionService {
         }
         var subscription = oEntity.get();
         log.debug("Subscription found with id {}, removing previous courses", id);
+
         subscription.getSubscriptionCourses().clear();
+        repository.saveAndFlush(subscription);
+
         for(UUID courseId : courseIdList) {
             log.debug("Finding course with id {} from {}", courseId, courseIdList);
 

@@ -14,5 +14,5 @@ public class AccessDto {
 
     @NotNull private CustomerDto customer;
 
-    private CourseDto course;
+    @NotNull private CourseDto course;
 }

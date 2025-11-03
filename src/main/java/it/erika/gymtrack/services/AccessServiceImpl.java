@@ -78,6 +78,8 @@ public class AccessServiceImpl implements AccessService {
 
         checkCourseAssociated(subscriptionDto.getId(), dto.getCourse().getId());
 
+        checkCourseSchedule(dto.getCourse().getId());
+
         entity = repository.save(entity);
         return mapper.toDto(entity);
     }
@@ -180,8 +182,9 @@ public class AccessServiceImpl implements AccessService {
 
     private void checkCourseSchedule(UUID courseId) {
         log.info("Checking courseSchedule of course {}", courseId);
-        var today = DayOfWeek.from(LocalDate.now());
-        var now = LocalTime.now();
+        var now = LocalDateTime.now();
+        var today = DayOfWeek.from(now);
+        var time = now.toLocalTime();
         boolean courseScheduleFound = false;
         var filter = new CourseScheduleFilter();
         filter.setCourseId(courseId);
@@ -189,8 +192,8 @@ public class AccessServiceImpl implements AccessService {
         var courseSchedules = courseScheduleService.searchCourseSchedule(Pageable.unpaged(), filter);
         log.info("Checking list to find a courseScheduleDto");
         for(CourseScheduleDto courseScheduleDto : courseSchedules) {
-            var nowIsAfterOrEqualStartTime = now.equals(courseScheduleDto.getStartTime()) || now.isAfter(courseScheduleDto.getStartTime());
-            var nowIsBeforeEndTime = now.isBefore(courseScheduleDto.getEndTime());
+            var nowIsAfterOrEqualStartTime = time.equals(courseScheduleDto.getStartTime()) || time.isAfter(courseScheduleDto.getStartTime());
+            var nowIsBeforeEndTime = time.isBefore(courseScheduleDto.getEndTime());
             if(nowIsAfterOrEqualStartTime || nowIsBeforeEndTime) {
                 courseScheduleFound = true;
                 log.info("Course {} is starting", courseScheduleDto.getCourse().getId());
